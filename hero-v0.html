@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>۵۰ هیرو سکشن سه بعدی برنامه نویسی</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  html { scroll-behavior: smooth; }
+  
+  body {
+    background: #050510;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    overflow-x: hidden;
+    color: #fff;
+  }
+
+  /* نوار پیشرفت اسکرول */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #00ffff, #ff00ff, #00ff41, #f7df1e);
+    z-index: 9999;
+    width: 0%;
+    box-shadow: 0 0 20px rgba(0,255,255,0.8);
+    transition: width 0.1s ease;
+  }
+
+  /* شمارنده هیرو */
+  .hero-counter {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(20px);
+    padding: 12px 24px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.15);
+    z-index: 9998;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #00ffff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .hero-counter span { color: #fff; font-weight: bold; }
+
+  /* ============ ساختار هیرو سکشن ============ */
+  .hero {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    perspective: 2000px;
+    transform-style: preserve-3d;
+    padding: 60px;
+  }
+
+  .hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    max-width: 1400px;
+    width: 100%;
+    align-items: center;
+    transform-style: preserve-3d;
+    position: relative;
+    z-index: 10;
+  }
+
+  .hero-content.reverse {
+    direction: ltr;
+  }
+  .hero-content.reverse > * {
+    direction: rtl;
+  }
+
+  .hero-text {
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-size: clamp(38px, 5vw, 72px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 25px;
+    letter-spacing: -1px;
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    line-height: 1.9;
+    opacity: 0.85;
+    margin-bottom: 35px;
+    max-width: 550px;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 16px 36px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    font-family: inherit;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ffff, #00bfff);
+    color: #000;
+    box-shadow: 0 10px 40px rgba(0,255,255,0.4);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 20px 50px rgba(0,255,255,0.6);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+
+  .btn-outline:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.8);
+    transform: translateY(-4px);
+  }
+
+  /* ============ تصویر سه بعدی ============ */
+  .hero-image-wrap {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 450px;
+  }
+
+  .hero-image {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 24px;
+    object-fit: cover;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* کارت شناور روی تصویر */
+  .float-card {
+    position: absolute;
+    background: rgba(20,20,40,0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+    z-index: 5;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    animation: floatCard 4s ease-in-out infinite;
+  }
+
+  .float-card-1 { top: 20px; right: -20px; animation-delay: 0s; }
+  .float-card-2 { bottom: 40px; left: -30px; animation-delay: 1.5s; }
+  .float-card-3 { top: 50%; right: -40px; animation-delay: 0.8s; }
+
+  @keyframes floatCard {
+    0%, 100% { transform: translateY(0) translateZ(40px); }
+    50% { transform: translateY(-15px) translateZ(60px); }
+  }
+
+  /* گوی‌های نورانی پس‌زمینه */
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ============ استایل‌های اختصاصی هر هیرو ============ */
+
+  /* HERO 1 - Cyberpunk */
+  .h1 { background: radial-gradient(ellipse at top, #1a0033 0%, #050510 70%); }
+  .h1 .glow-orb { width: 500px; height: 500px; background: #ff00ff; top: -100px; right: -100px; opacity: 0.4; }
+  .h1 .hero-badge { background: rgba(255,0,255,0.15); color: #ff00ff; border: 1px solid rgba(255,0,255,0.4); }
+  .h1 .hero-title { background: linear-gradient(90deg, #ff00ff, #00ffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .h1 .btn-primary { background: linear-gradient(135deg, #ff00ff, #00bfff); box-shadow: 0 10px 40px rgba(255,0,255,0.4); }
+
+  /* HERO 2 - Matrix */
+  .h2 { background: #000; }
+  .h2 .glow-orb { width: 600px; height: 600px; background: #00ff41; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.15; }
+  .h2 .hero-badge { background: rgba(0,255,65,0.1); color: #00ff41; border: 1px solid rgba(0,255,65,0.3); }
+  .h2 .hero-title { color: #00ff41; text-shadow: 0 0 30px rgba(0,255,65,0.6); font-family: 'Courier New', monospace; }
+  .h2 .hero-desc { color: #00ff41; opacity: 0.7; font-family: 'Courier New', monospace; }
+  .h2 .btn-primary { background: #00ff41; color: #000; box-shadow: 0 10px 40px rgba(0,255,65,0.4); }
+
+  /* HERO 3 - Ocean */
+  .h3 { background: linear-gradient(180deg, #001f3f, #003366, #00509e); }
+  .h3 .glow-orb { width: 500px; height: 500px; background: #00bfff; bottom: -150px; left: -100px; opacity: 0.5; }
+  .h3 .hero-badge { background: rgba(0,191,255,0.15); color: #7ec8e3; border: 1px solid rgba(0,191,255,0.4); }
+  .h3 .hero-title { background: linear-gradient(90deg, #7ec8e3, #00bfff, #7ec8e3); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h3 .btn-primary { background: linear-gradient(135deg, #00bfff, #7ec8e3); color: #000; }
+
+  /* HERO 4 - Fire */
+  .h4 { background: radial-gradient(ellipse at bottom, #2a0800 0%, #050510 70%); }
+  .h4 .glow-orb { width: 500px; height: 500px; background: #ff4500; bottom: -100px; right: -100px; opacity: 0.5; }
+  .h4 .hero-badge { background: rgba(255,69,0,0.15); color: #ff6b00; border: 1px solid rgba(255,69,0,0.4); }
+  .h4 .hero-title { background: linear-gradient(90deg, #f12711, #f5af19, #f12711); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h4 .btn-primary { background: linear-gradient(135deg, #f12711, #f5af19); }
+
+  /* HERO 5 - Ice */
+  .h5 { background: linear-gradient(180deg, #0a1628, #1a3a5c, #2d5f8a); }
+  .h5 .glow-orb { width: 500px; height: 500px; background: #6dd5ed; top: -100px; left: -100px; opacity: 0.4; }
+  .h5 .hero-badge { background: rgba(109,213,237,0.15); color: #6dd5ed; border: 1px solid rgba(109,213,237,0.4); }
+  .h5 .hero-title { background: linear-gradient(90deg, #fff, #6dd5ed, #fff); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h5 .btn-primary { background: linear-gradient(135deg, #6dd5ed, #2193b0); color: #000; }
+
+  /* HERO 6 - Gold */
+  .h6 { background: linear-gradient(135deg, #0a0a0a, #1a1a1a); }
+  .h6 .glow-orb { width: 500px; height: 500px; background: #d4af37; top: 50%; right: -150px; opacity: 0.3; }
+  .h6 .hero-badge { background: rgba(212,175,55,0.15); color: #d4af37; border: 1px solid rgba(212,175,55,0.4); }
+  .h6 .hero-title { background: linear-gradient(90deg, #d4af37, #ffd700, #d4af37); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 2s linear infinite; }
+  .h6 .btn-primary { background: linear-gradient(135deg, #d4af37, #ffd700); color: #000; }
+
+  /* HERO 7 - Purple Galaxy */
+  .h7 { background: radial-gradient(ellipse at top, #2b1055 0%, #050510 70%); }
+  .h7 .glow-orb { width: 500px; height: 500px; background: #a78bfa; top: -100px; left: 50%; opacity: 0.4; }
+  .h7 .hero-badge { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.4); }
+  .h7 .hero-title { background: linear-gradient(90deg, #a78bfa, #fff, #a78bfa); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h7 .btn-primary { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+
+  /* HERO 8 - Red Power */
+  .h8 { background: radial-gradient(ellipse at center, #2a0000 0%, #050510 70%); }
+  .h8 .glow-orb { width: 500px; height: 500px; background: #ff3333; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.3; }
+  .h8 .hero-badge { background: rgba(255,51,51,0.15); color: #ff3333; border: 1px solid rgba(255,51,51,0.4); }
+  .h8 .hero-title { color: #ff3333; text-shadow: 0 0 30px rgba(255,51,51,0.6); }
+  .h8 .btn-primary { background: linear-gradient(135deg, #ff3333, #ff6666); }
+
+  /* HERO 9 - Emerald */
+  .h9 { background: linear-gradient(135deg, #002020, #005050); }
+  .h9 .glow-orb { width: 500px; height: 500px; background: #10b981; top: 50%; right: -150px; opacity: 0.4; }
+  .h9 .hero-badge { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.4); }
+  .h9 .hero-title { background: linear-gradient(90deg, #10b981, #6ee7b7, #10b981); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h9 .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: #000; }
+
+  /* HERO 10 - Sunset */
+  .h10 { background: linear-gradient(180deg, #ff512f 0%, #dd2476 100%); }
+  .h10 .glow-orb { width: 500px; height: 500px; background: #ffd700; top: -100px; left: -100px; opacity: 0.5; }
+  .h10 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+  .h10 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+  .h10 .btn-primary { background: #fff; color: #dd2476; }
+
+  /* HERO 11-50 - الگوهای تکرارشونده با رنگ‌های متفاوت */
+  .h11 { background: radial-gradient(ellipse at top right, #1a0033 0%, #050510 70%); }
+  .h11 .glow-orb { width: 500px; height: 500px; background: #e94560; top: -100px; right: -100px; opacity: 0.4; }
+  .h11 .hero-badge { background: rgba(233,69,96,0.15); color: #e94560; border: 1px solid rgba(233,69,96,0.4); }
+  .h11 .hero-title { background: linear-gradient(90deg, #e94560, #f5a623, #e94560); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h11 .btn-primary { background: linear-gradient(135deg, #e94560, #f5a623); }
+
+  .h12 { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+  .h12 .glow-orb { width: 500px; height: 500px; background: #00ff96; bottom: -100px; left: -100px; opacity: 0.4; }
+  .h12 .hero-badge { background: rgba(0,255,150,0.15); color: #00ff96; border: 1px solid rgba(0,255,150,0.4); }
+  .h12 .hero-title { color: #00ff96; text-shadow: 0 0 30px rgba(0,255,150,0.5); }
+  .h12 .btn-primary { background: linear-gradient(135deg, #00ff96, #00bfff); color: #000; }
+
+  .h13 { background: #1a001a; }
+  .h13 .glow-orb { width: 500px; height: 500px; background: #ff00ff; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h13 .hero-badge { background: rgba(255,0,255,0.15); color: #ff00ff; border: 1px solid rgba(255,0,255,0.4); }
+  .h13 .hero-title { color: #ff00ff; text-shadow: 0 0 30px rgba(255,0,255,0.6); }
+  .h13 .btn-primary { background: linear-gradient(135deg, #ff00ff, #ff66ff); }
+
+  .h14 { background: radial-gradient(ellipse at bottom, #1a1000 0%, #050510 70%); }
+  .h14 .glow-orb { width: 500px; height: 500px; background: #ffa500; bottom: -100px; right: -100px; opacity: 0.4; }
+  .h14 .hero-badge { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.4); }
+  .h14 .hero-title { background: linear-gradient(90deg, #ffa500, #ffd700, #ffa500); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h14 .btn-primary { background: linear-gradient(135deg, #ffa500, #ffd700); color: #000; }
+
+  .h15 { background: linear-gradient(135deg, #000428, #004e92); }
+  .h15 .glow-orb { width: 500px; height: 500px; background: #00d4ff; top: -100px; left: -100px; opacity: 0.4; }
+  .h15 .hero-badge { background: rgba(0,212,255,0.15); color: #00d4ff; border: 1px solid rgba(0,212,255,0.4); }
+  .h15 .hero-title { background: linear-gradient(90deg, #00d4ff, #fff, #00d4ff); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h15 .btn-primary { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #000; }
+
+  .h16 { background: radial-gradient(ellipse at top, #2d1b4e 0%, #050510 70%); }
+  .h16 .glow-orb { width: 500px; height: 500px; background: #b537f2; top: -100px; right: -100px; opacity: 0.4; }
+  .h16 .hero-badge { background: rgba(181,55,242,0.15); color: #b537f2; border: 1px solid rgba(181,55,242,0.4); }
+  .h16 .hero-title { background: linear-gradient(90deg, #b537f2, #ff66ff, #b537f2); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h16 .btn-primary { background: linear-gradient(135deg, #b537f2, #7c3aed); }
+
+  .h17 { background: linear-gradient(135deg, #004d40, #00695c, #00897b); }
+  .h17 .glow-orb { width: 500px; height: 500px; background: #64ffda; bottom: -100px; left: -100px; opacity: 0.4; }
+  .h17 .hero-badge { background: rgba(100,255,218,0.15); color: #64ffda; border: 1px solid rgba(100,255,218,0.4); }
+  .h17 .hero-title { color: #64ffda; text-shadow: 0 0 30px rgba(100,255,218,0.5); }
+  .h17 .btn-primary { background: linear-gradient(135deg, #64ffda, #1de9b6); color: #000; }
+
+  .h18 { background: radial-gradient(ellipse at center, #1a0000 0%, #050510 70%); }
+  .h18 .glow-orb { width: 500px; height: 500px; background: #ff1744; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h18 .hero-badge { background: rgba(255,23,68,0.15); color: #ff1744; border: 1px solid rgba(255,23,68,0.4); }
+  .h18 .hero-title { background: linear-gradient(90deg, #ff1744, #ff9100, #ff1744); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h18 .btn-primary { background: linear-gradient(135deg, #ff1744, #ff9100); }
+
+  .h19 { background: linear-gradient(135deg, #0a0a1a, #1a1a3a); }
+  .h19 .glow-orb { width: 500px; height: 500px; background: #7c4dff; top: -100px; right: -100px; opacity: 0.4; }
+  .h19 .hero-badge { background: rgba(124,77,255,0.15); color: #7c4dff; border: 1px solid rgba(124,77,255,0.4); }
+  .h19 .hero-title { color: #7c4dff; text-shadow: 0 0 30px rgba(124,77,255,0.5); }
+  .h19 .btn-primary { background: linear-gradient(135deg, #7c4dff, #b388ff); }
+
+  .h20 { background: radial-gradient(ellipse at bottom, #2a1a00 0%, #050510 70%); }
+  .h20 .glow-orb { width: 500px; height: 500px; background: #ffc107; bottom: -100px; right: -100px; opacity: 0.4; }
+  .h20 .hero-badge { background: rgba(255,193,7,0.15); color: #ffc107; border: 1px solid rgba(255,193,7,0.4); }
+  .h20 .hero-title { background: linear-gradient(90deg, #ffc107, #ff9800, #ffc107); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h20 .btn-primary { background: linear-gradient(135deg, #ffc107, #ff9800); color: #000; }
+
+  .h21 { background: linear-gradient(135deg, #1a0033, #330066); }
+  .h21 .glow-orb { width: 500px; height: 500px; background: #e91e63; top: -100px; left: -100px; opacity: 0.4; }
+  .h21 .hero-badge { background: rgba(233,30,99,0.15); color: #e91e63; border: 1px solid rgba(233,30,99,0.4); }
+  .h21 .hero-title { color: #e91e63; text-shadow: 0 0 30px rgba(233,30,99,0.5); }
+  .h21 .btn-primary { background: linear-gradient(135deg, #e91e63, #f06292); }
+
+  .h22 { background: radial-gradient(ellipse at top, #001a1a 0%, #050510 70%); }
+  .h22 .glow-orb { width: 500px; height: 500px; background: #00e5ff; top: -100px; right: -100px; opacity: 0.4; }
+  .h22 .hero-badge { background: rgba(0,229,255,0.15); color: #00e5ff; border: 1px solid rgba(0,229,255,0.4); }
+  .h22 .hero-title { background: linear-gradient(90deg, #00e5ff, #18ffff, #00e5ff); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h22 .btn-primary { background: linear-gradient(135deg, #00e5ff, #00b8d4); color: #000; }
+
+  .h23 { background: linear-gradient(135deg, #2a0800, #4a1000); }
+  .h23 .glow-orb { width: 500px; height: 500px; background: #ff6d00; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h23 .hero-badge { background: rgba(255,109,0,0.15); color: #ff6d00; border: 1px solid rgba(255,109,0,0.4); }
+  .h23 .hero-title { color: #ff6d00; text-shadow: 0 0 30px rgba(255,109,0,0.5); }
+  .h23 .btn-primary { background: linear-gradient(135deg, #ff6d00, #ffab00); color: #000; }
+
+  .h24 { background: radial-gradient(ellipse at bottom, #0a1a0a 0%, #050510 70%); }
+  .h24 .glow-orb { width: 500px; height: 500px; background: #76ff03; bottom: -100px; right: -100px; opacity: 0.4; }
+  .h24 .hero-badge { background: rgba(118,255,3,0.15); color: #76ff03; border: 1px solid rgba(118,255,3,0.4); }
+  .h24 .hero-title { background: linear-gradient(90deg, #76ff03, #b2ff59, #76ff03); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h24 .btn-primary { background: linear-gradient(135deg, #76ff03, #64dd17); color: #000; }
+
+  .h25 { background: linear-gradient(135deg, #1a001a, #330033); }
+  .h25 .glow-orb { width: 500px; height: 500px; background: #d500f9; top: -100px; right: -100px; opacity: 0.4; }
+  .h25 .hero-badge { background: rgba(213,0,249,0.15); color: #d500f9; border: 1px solid rgba(213,0,249,0.4); }
+  .h25 .hero-title { color: #d500f9; text-shadow: 0 0 30px rgba(213,0,249,0.5); }
+  .h25 .btn-primary { background: linear-gradient(135deg, #d500f9, #e040fb); }
+
+  /* الگوهای 26-50 */
+  .h26 { background: radial-gradient(ellipse at top left, #001a33 0%, #050510 70%); }
+  .h26 .glow-orb { width: 500px; height: 500px; background: #2979ff; top: -100px; left: -100px; opacity: 0.4; }
+  .h26 .hero-badge { background: rgba(41,121,255,0.15); color: #2979ff; border: 1px solid rgba(41,121,255,0.4); }
+  .h26 .hero-title { background: linear-gradient(90deg, #2979ff, #82b1ff, #2979ff); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h26 .btn-primary { background: linear-gradient(135deg, #2979ff, #2962ff); color: #000; }
+
+  .h27 { background: linear-gradient(135deg, #1a1a00, #333300); }
+  .h27 .glow-orb { width: 500px; height: 500px; background: #ffea00; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h27 .hero-badge { background: rgba(255,234,0,0.15); color: #ffea00; border: 1px solid rgba(255,234,0,0.4); }
+  .h27 .hero-title { background: linear-gradient(90deg, #ffea00, #ffff8d, #ffea00); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h27 .btn-primary { background: linear-gradient(135deg, #ffea00, #fdd835); color: #000; }
+
+  .h28 { background: radial-gradient(ellipse at bottom, #1a0000 0%, #050510 70%); }
+  .h28 .glow-orb { width: 500px; height: 500px; background: #ff5252; bottom: -100px; left: -100px; opacity: 0.4; }
+  .h28 .hero-badge { background: rgba(255,82,82,0.15); color: #ff5252; border: 1px solid rgba(255,82,82,0.4); }
+  .h28 .hero-title { color: #ff5252; text-shadow: 0 0 30px rgba(255,82,82,0.5); }
+  .h28 .btn-primary { background: linear-gradient(135deg, #ff5252, #ff8a80); }
+
+  .h29 { background: linear-gradient(135deg, #001a1a, #003333); }
+  .h29 .glow-orb { width: 500px; height: 500px; background: #1de9b6; top: -100px; right: -100px; opacity: 0.4; }
+  .h29 .hero-badge { background: rgba(29,233,182,0.15); color: #1de9b6; border: 1px solid rgba(29,233,182,0.4); }
+  .h29 .hero-title { background: linear-gradient(90deg, #1de9b6, #a7ffeb, #1de9b6); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h29 .btn-primary { background: linear-gradient(135deg, #1de9b6, #00bfa5); color: #000; }
+
+  .h30 { background: radial-gradient(ellipse at center, #1a0a1a 0%, #050510 70%); }
+  .h30 .glow-orb { width: 500px; height: 500px; background: #f50057; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h30 .hero-badge { background: rgba(245,0,87,0.15); color: #f50057; border: 1px solid rgba(245,0,87,0.4); }
+  .h30 .hero-title { color: #f50057; text-shadow: 0 0 30px rgba(245,0,87,0.5); }
+  .h30 .btn-primary { background: linear-gradient(135deg, #f50057, #ff4081); }
+
+  .h31 { background: linear-gradient(135deg, #0a0a2a, #1a1a4a); }
+  .h31 .glow-orb { width: 500px; height: 500px; background: #536dfe; top: -100px; left: -100px; opacity: 0.4; }
+  .h31 .hero-badge { background: rgba(83,109,254,0.15); color: #536dfe; border: 1px solid rgba(83,109,254,0.4); }
+  .h31 .hero-title { background: linear-gradient(90deg, #536dfe, #8c9eff, #536dfe); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h31 .btn-primary { background: linear-gradient(135deg, #536dfe, #3d5afe); }
+
+  .h32 { background: radial-gradient(ellipse at top, #1a001a 0%, #050510 70%); }
+  .h32 .glow-orb { width: 500px; height: 500px; background: #ea80fc; top: -100px; right: -100px; opacity: 0.4; }
+  .h32 .hero-badge { background: rgba(234,128,252,0.15); color: #ea80fc; border: 1px solid rgba(234,128,252,0.4); }
+  .h32 .hero-title { color: #ea80fc; text-shadow: 0 0 30px rgba(234,128,252,0.5); }
+  .h32 .btn-primary { background: linear-gradient(135deg, #ea80fc, #ce93d8); }
+
+  .h33 { background: linear-gradient(135deg, #001a0d, #003320); }
+  .h33 .glow-orb { width: 500px; height: 500px; background: #00e676; top: 50%; right: -150px; opacity: 0.4; }
+  .h33 .hero-badge { background: rgba(0,230,118,0.15); color: #00e676; border: 1px solid rgba(0,230,118,0.4); }
+  .h33 .hero-title { background: linear-gradient(90deg, #00e676, #69f0ae, #00e676); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h33 .btn-primary { background: linear-gradient(135deg, #00e676, #00c853); color: #000; }
+
+  .h34 { background: radial-gradient(ellipse at bottom, #0a0a1a 0%, #050510 70%); }
+  .h34 .glow-orb { width: 500px; height: 500px; background: #ffab40; bottom: -100px; left: -100px; opacity: 0.4; }
+  .h34 .hero-badge { background: rgba(255,171,64,0.15); color: #ffab40; border: 1px solid rgba(255,171,64,0.4); }
+  .h34 .hero-title { color: #ffab40; text-shadow: 0 0 30px rgba(255,171,64,0.5); }
+  .h34 .btn-primary { background: linear-gradient(135deg, #ffab40, #ff9100); color: #000; }
+
+  .h35 { background: linear-gradient(135deg, #1a000d, #33001a); }
+  .h35 .glow-orb { width: 500px; height: 500px; background: #ff80ab; top: -100px; right: -100px; opacity: 0.4; }
+  .h35 .hero-badge { background: rgba(255,128,171,0.15); color: #ff80ab; border: 1px solid rgba(255,128,171,0.4); }
+  .h35 .hero-title { background: linear-gradient(90deg, #ff80ab, #ff4081, #ff80ab); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h35 .btn-primary { background: linear-gradient(135deg, #ff80ab, #f50057); }
+
+  .h36 { background: radial-gradient(ellipse at top, #0d1a2a 0%, #050510 70%); }
+  .h36 .glow-orb { width: 500px; height: 500px; background: #40c4ff; top: -100px; left: -100px; opacity: 0.4; }
+  .h36 .hero-badge { background: rgba(64,196,255,0.15); color: #40c4ff; border: 1px solid rgba(64,196,255,0.4); }
+  .h36 .hero-title { color: #40c4ff; text-shadow: 0 0 30px rgba(64,196,255,0.5); }
+  .h36 .btn-primary { background: linear-gradient(135deg, #40c4ff, #0091ea); color: #000; }
+
+  .h37 { background: linear-gradient(135deg, #1a1a0d, #333320); }
+  .h37 .glow-orb { width: 500px; height: 500px; background: #ffd600; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h37 .hero-badge { background: rgba(255,214,0,0.15); color: #ffd600; border: 1px solid rgba(255,214,0,0.4); }
+  .h37 .hero-title { background: linear-gradient(90deg, #ffd600, #ffff00, #ffd600); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h37 .btn-primary { background: linear-gradient(135deg, #ffd600, #ffab00); color: #000; }
+
+  .h38 { background: radial-gradient(ellipse at bottom, #1a0d00 0%, #050510 70%); }
+  .h38 .glow-orb { width: 500px; height: 500px; background: #ff6e40; bottom: -100px; right: -100px; opacity: 0.4; }
+  .h38 .hero-badge { background: rgba(255,110,64,0.15); color: #ff6e40; border: 1px solid rgba(255,110,64,0.4); }
+  .h38 .hero-title { color: #ff6e40; text-shadow: 0 0 30px rgba(255,110,64,0.5); }
+  .h38 .btn-primary { background: linear-gradient(135deg, #ff6e40, #ff3d00); }
+
+  .h39 { background: linear-gradient(135deg, #001a1a, #002a2a); }
+  .h39 .glow-orb { width: 500px; height: 500px; background: #18ffff; top: -100px; right: -100px; opacity: 0.4; }
+  .h39 .hero-badge { background: rgba(24,255,255,0.15); color: #18ffff; border: 1px solid rgba(24,255,255,0.4); }
+  .h39 .hero-title { background: linear-gradient(90deg, #18ffff, #84ffff, #18ffff); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h39 .btn-primary { background: linear-gradient(135deg, #18ffff, #00b8d4); color: #000; }
+
+  .h40 { background: radial-gradient(ellipse at center, #1a0a1a 0%, #050510 70%); }
+  .h40 .glow-orb { width: 500px; height: 500px; background: #b388ff; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h40 .hero-badge { background: rgba(179,136,255,0.15); color: #b388ff; border: 1px solid rgba(179,136,255,0.4); }
+  .h40 .hero-title { color: #b388ff; text-shadow: 0 0 30px rgba(179,136,255,0.5); }
+  .h40 .btn-primary { background: linear-gradient(135deg, #b388ff, #7c4dff); }
+
+  .h41 { background: linear-gradient(135deg, #0a1a0a, #1a3a1a); }
+  .h41 .glow-orb { width: 500px; height: 500px; background: #69f0ae; top: -100px; left: -100px; opacity: 0.4; }
+  .h41 .hero-badge { background: rgba(105,240,174,0.15); color: #69f0ae; border: 1px solid rgba(105,240,174,0.4); }
+  .h41 .hero-title { background: linear-gradient(90deg, #69f0ae, #b9f6ca, #69f0ae); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h41 .btn-primary { background: linear-gradient(135deg, #69f0ae, #00e676); color: #000; }
+
+  .h42 { background: radial-gradient(ellipse at top, #1a1a2a 0%, #050510 70%); }
+  .h42 .glow-orb { width: 500px; height: 500px; background: #8c9eff; top: -100px; right: -100px; opacity: 0.4; }
+  .h42 .hero-badge { background: rgba(140,158,255,0.15); color: #8c9eff; border: 1px solid rgba(140,158,255,0.4); }
+  .h42 .hero-title { color: #8c9eff; text-shadow: 0 0 30px rgba(140,158,255,0.5); }
+  .h42 .btn-primary { background: linear-gradient(135deg, #8c9eff, #536dfe); }
+
+  .h43 { background: linear-gradient(135deg, #1a0a00, #2a1500); }
+  .h43 .glow-orb { width: 500px; height: 500px; background: #ffab00; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h43 .hero-badge { background: rgba(255,171,0,0.15); color: #ffab00; border: 1px solid rgba(255,171,0,0.4); }
+  .h43 .hero-title { background: linear-gradient(90deg, #ffab00, #ffd740, #ffab00); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h43 .btn-primary { background: linear-gradient(135deg, #ffab00, #ff8f00); color: #000; }
+
+  .h44 { background: radial-gradient(ellipse at bottom, #0a1a1a 0%, #050510 70%); }
+  .h44 .glow-orb { width: 500px; height: 500px; background: #84ffff; bottom: -100px; left: -100px; opacity: 0.4; }
+  .h44 .hero-badge { background: rgba(132,255,255,0.15); color: #84ffff; border: 1px solid rgba(132,255,255,0.4); }
+  .h44 .hero-title { color: #84ffff; text-shadow: 0 0 30px rgba(132,255,255,0.5); }
+  .h44 .btn-primary { background: linear-gradient(135deg, #84ffff, #18ffff); color: #000; }
+
+  .h45 { background: linear-gradient(135deg, #1a0a1a, #2a0a2a); }
+  .h45 .glow-orb { width: 500px; height: 500px; background: #ff80ab; top: -100px; right: -100px; opacity: 0.4; }
+  .h45 .hero-badge { background: rgba(255,128,171,0.15); color: #ff80ab; border: 1px solid rgba(255,128,171,0.4); }
+  .h45 .hero-title { color: #ff80ab; text-shadow: 0 0 30px rgba(255,128,171,0.5); }
+  .h45 .btn-primary { background: linear-gradient(135deg, #ff80ab, #f50057); }
+
+  .h46 { background: radial-gradient(ellipse at top, #0d1a0d 0%, #050510 70%); }
+  .h46 .glow-orb { width: 500px; height: 500px; background: #b2ff59; top: -100px; left: -100px; opacity: 0.4; }
+  .h46 .hero-badge { background: rgba(178,255,89,0.15); color: #b2ff59; border: 1px solid rgba(178,255,89,0.4); }
+  .h46 .hero-title { color: #b2ff59; text-shadow: 0 0 30px rgba(178,255,89,0.5); }
+  .h46 .btn-primary { background: linear-gradient(135deg, #b2ff59, #76ff03); color: #000; }
+
+  .h47 { background: linear-gradient(135deg, #1a0d2a, #2d1a4a); }
+  .h47 .glow-orb { width: 500px; height: 500px; background: #ce93d8; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h47 .hero-badge { background: rgba(206,147,216,0.15); color: #ce93d8; border: 1px solid rgba(206,147,216,0.4); }
+  .h47 .hero-title { color: #ce93d8; text-shadow: 0 0 30px rgba(206,147,216,0.5); }
+  .h47 .btn-primary { background: linear-gradient(135deg, #ce93d8, #ab47bc); }
+
+  .h48 { background: radial-gradient(ellipse at bottom, #1a0a00 0%, #050510 70%); }
+  .h48 .glow-orb { width: 500px; height: 500px; background: #ff9100; bottom: -100px; right: -100px; opacity: 0.4; }
+  .h48 .hero-badge { background: rgba(255,145,0,0.15); color: #ff9100; border: 1px solid rgba(255,145,0,0.4); }
+  .h48 .hero-title { color: #ff9100; text-shadow: 0 0 30px rgba(255,145,0,0.5); }
+  .h48 .btn-primary { background: linear-gradient(135deg, #ff9100, #ff6d00); color: #000; }
+
+  .h49 { background: linear-gradient(135deg, #0a1a2a, #1a2a4a); }
+  .h49 .glow-orb { width: 500px; height: 500px; background: #82b1ff; top: -100px; left: -100px; opacity: 0.4; }
+  .h49 .hero-badge { background: rgba(130,177,255,0.15); color: #82b1ff; border: 1px solid rgba(130,177,255,0.4); }
+  .h49 .hero-title { color: #82b1ff; text-shadow: 0 0 30px rgba(130,177,255,0.5); }
+  .h49 .btn-primary { background: linear-gradient(135deg, #82b1ff, #448aff); }
+
+  .h50 { background: radial-gradient(ellipse at center, #2a1a0a 0%, #050510 70%); }
+  .h50 .glow-orb { width: 500px; height: 500px; background: #ffd740; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.4; }
+  .h50 .hero-badge { background: rgba(255,215,64,0.15); color: #ffd740; border: 1px solid rgba(255,215,64,0.4); }
+  .h50 .hero-title { background: linear-gradient(90deg, #ffd740, #ffea00, #ffd740); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+  .h50 .btn-primary { background: linear-gradient(135deg, #ffd740, #ffc400); color: #000; }
+
+  @keyframes shine {
+    to { background-position: 200% center; }
+  }
+
+  /* ذرات شناور */
+  .particle {
+    position: absolute;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    from { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 0.7; }
+    90% { opacity: 0.7; }
+    to { transform: translateY(-100px) scale(1); opacity: 0; }
+  }
+
+  /* ریسپانسیو */
+  @media (max-width: 900px) {
+    .hero-content { grid-template-columns: 1fr; gap: 40px; }
+    .hero { padding: 40px 24px; }
+    .hero-image-wrap { min-height: 320px; }
+    .float-card { font-size: 11px; padding: 10px 14px; }
+    .float-card-1, .float-card-3 { right: 0; }
+    .float-card-2 { left: 0; }
+  }
+
+  /* کدهای تزئینی ترمینال */
+  .terminal-code {
+    position: absolute;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.08);
+    line-height: 1.5;
+    pointer-events: none;
+    white-space: pre;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="hero-counter">
+  <span id="currentHero">1</span> / <span>50</span> هیرو
+</div>
+
+<div id="heroesContainer"></div>
+
+<script>
+// ============ داده‌های ۵۰ هیرو ============
+const heroData = [
+  // 1-10
+  { id:1, badge:"CYBERPUNK 2077", title:"آینده کدنویسی", desc:"در دنیای سایبری، هر خط کد می‌تواند یک انقلاب باشد. با جدیدترین تکنولوژی‌ها، آینده را بسازید.", img:"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80", float1:"const future = true;", float2:"<Cyber/>", float3:"npm install future" },
+  { id:2, badge:"MATRIX MODE", title:"وارد ماتریکس شو", desc:"دنیای واقعی برنامه‌نویسی اینجاست. کدهای باینری، امنیت و هک اخلاقی را یاد بگیرید.", img:"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80", float1:"0x00FF41", float2:"> sudo access", float3:"decrypt();" },
+  { id:3, badge:"DEEP OCEAN", title:"اقیانوس کد", desc:"در اعماق دانش برنامه‌نویسی غواصی کنید. از فرانت‌اند تا بک‌اند، همه چیز اینجاست.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80", float1:"async/await", float2:"deep dive()", float3:"∞ possibilities" },
+  { id:4, badge:"FIRE CODE", title:"کدنویسی آتشین", desc:"با اشتیاق بسازید. پروژه‌های خود را با قدرت و سرعت آتش پیاده‌سازی کنید.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80", float1:"hot reload 🔥", float2:"fast build", float3:"speed++" },
+  { id:5, badge:"ICE FROST", title:"کد یخی", desc:"سرد، دقیق و حرفه‌ای. الگوریتم‌های بهینه و معماری‌های مقیاس‌پذیر بسازید.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80", float1:"-273.15°C", float2:"clean code", float3:"optimize()" },
+  { id:6, badge:"GOLD EDITION", title:"نسخه طلایی", desc:"بهترین‌ها اینجا جمع شده‌اند. استانداردهای جهانی برنامه‌نویسی را رعایت کنید.", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&q=80", float1:"$ premium", float2:"gold code", float3:"top 1%" },
+  { id:7, badge:"GALAXY", title:"کهکشان برنامه‌نویسی", desc:"بی‌نهایت امکان در فضای کد. از هوش مصنوعی تا بلاکچین، همه چیز را کشف کنید.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&q=80", float1:"stars.js", float2:"cosmos.app", float3:"universe()" },
+  { id:8, badge:"RED POWER", title:"قدرت قرمز", desc:"با قدرت کد بزنید. پروژه‌های بزرگی که دنیا را تغییر می‌دهند بسازید.", img:"https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=800&q=80", float1:"power = 9999", float2:"deploy()", float3:"crush bugs" },
+  { id:9, badge:"EMERALD", title:"زمرد سبز", desc:"رشد پایدار و کد سبز. برنامه‌نویسی دوستدار محیط زیست و بهینه.", img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80", float1:"green.tech", float2:"eco.js", float3:"sustain()" },
+  { id:10, badge:"SUNSET DEV", title:"غروب توسعه‌دهنده", desc:"زیباترین لحظات برنامه‌نویسی، وقتی است که کد شما کار می‌کند.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", float1:"sunset.dev", float2:"beautiful()", float3:"moment()" },
+  // 11-20
+  { id:11, badge:"NEON NIGHTS", title:"شب‌های نئونی", desc:"در تاریکی شب کد بزنید و از درخشش نئون لذت ببرید.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80", float1:"neon.glow", float2:"midnight()", float3:"bright()" },
+  { id:12, badge:"DEEP FOREST", title:"جنگل عمیق", desc:"در اعماق جنگل تکنولوژی گم شوید و راه خود را پیدا کنید.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80", float1:"forest.js", float2:"explore()", float3:"nature" },
+  { id:13, badge:"PINK NEON", title:"نئون صورتی", desc:"با رنگ صورتی نئونی، رابط‌های کاربری خیره‌کننده بسازید.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80", float1:"#FF00FF", float2:"pink.dev", float3:"glow()" },
+  { id:14, badge:"ORANGE BURST", title:"انفجار نارنجی", desc:"انرژی و خلاقیت نارنجی را در کد خود جاری کنید.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80", float1:"burst()", float2:"orange.js", float3:"energy" },
+  { id:15, badge:"BLUE OCEAN", title:"اقیانوس آبی", desc:"عمیق، آرام و قدرتمند مثل اقیانوس آبی کد بزنید.", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80", float1:"ocean.js", float2:"deep.blue", float3:"calm()" },
+  { id:16, badge:"PURPLE HAZE", title:"مه بنفش", desc:"در مه بنفش خلاقیت غرق شوید و ایده‌های نو بسازید.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80", float1:"haze.js", float2:"purple", float3:"dream()" },
+  { id:17, badge:"TEAL TECH", title:"تکنولوژی فیروزه‌ای", desc:"با رنگ فیروزه‌ای، تازگی و نوآوری را به کد خود بیاورید.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80", float1:"teal.tech", float2:"fresh()", float3:"innovate" },
+  { id:18, badge:"CRIMSON", title:"قرمز خونین", desc:"با قدرت و شدت قرمز، پروژه‌های انقلابی بسازید.", img:"https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=800&q=80", float1:"crimson.js", float2:"revolution()", float3:"fight()" },
+  { id:19, badge:"INDIGO DREAM", title:"رویای نیلی", desc:"در دنیای رویایی نیلی، ایده‌های خود را واقعی کنید.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&q=80", float1:"indigo.js", float2:"dream()", float3:"create" },
+  { id:20, badge:"AMBER GLOW", title:"درخشش کهربایی", desc:"با گرمای کهربایی، کدهای خود را درخشان کنید.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", float1:"amber.glow", float2:"warm()", float3:"shine" },
+  // 21-30
+  { id:21, badge:"MAGENTA", title:"ماژنتا", desc:"با رنگ ماژنتا، خلاقیت خود را به نمایش بگذارید.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80", float1:"magenta.js", float2:"bold()", float3:"vibrant" },
+  { id:22, badge:"AQUA", title:"آبی فیروزه‌ای", desc:"تازگی و شفافیت آبی فیروزه‌ای را در کد خود حس کنید.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80", float1:"aqua.js", float2:"clear()", float3:"pure" },
+  { id:23, badge:"COPPER", title:"مسی درخشان", desc:"با رنگ مسی، گرما و اصالت را به پروژه‌های خود بیاورید.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80", float1:"copper.js", float2:"warm()", float3:"classic" },
+  { id:24, badge:"LIME GREEN", title:"سبز لایمی", desc:"با انرژی سبز لایمی، سرعت و شادابی را به کد خود اضافه کنید.", img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80", float1:"lime.js", float2:"fast()", float3:"fresh" },
+  { id:25, badge:"VIOLET", title:"بنفش بنفشه", desc:"در دنیای بنفش بنفشه، خلاقیت بی‌پایان را تجربه کنید.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80", float1:"violet.js", float2:"deep()", float3:"royal" },
+  { id:26, badge:"SKY BLUE", title:"آبی آسمانی", desc:"با آبی آسمانی، آزادی و بی‌نهایتی را در کد خود جاری کنید.", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80", float1:"sky.js", float2:"free()", float3:"infinite" },
+  { id:27, badge:"YELLOW SUN", title:"خورشید زرد", desc:"با انرژی زرد خورشید، روشنایی را به پروژه‌های خود بیاورید.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", float1:"sun.js", float2:"bright()", float3:"energy" },
+  { id:28, badge:"CORAL", title:"مرجانی", desc:"با رنگ مرجانی، زیبایی و زندگی را به کد خود اضافه کنید.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80", float1:"coral.js", float2:"alive()", float3:"beauty" },
+  { id:29, badge:"MINT", title:"نعنایی", desc:"با رنگ نعنایی، تازگی و خنکی را در کد خود حس کنید.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80", float1:"mint.js", float2:"cool()", float3:"fresh" },
+  { id:30, badge:"ROSE", title:"گلی", desc:"با رنگ گلی، لطافت و زیبایی را به پروژه‌های خود بیاورید.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80", float1:"rose.js", float2:"soft()", float3:"elegant" },
+  // 31-40
+  { id:31, badge:"INDIGO", title:"نیلی عمیق", desc:"در عمق نیلی، دانش و خرد برنامه‌نویسی را کشف کنید.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&q=80", float1:"indigo.js", float2:"wisdom()", float3:"deep" },
+  { id:32, badge:"PINK ROSE", title:"رز صورتی", desc:"با رز صورتی، زیبایی و عشق را به کد خود اضافه کنید.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80", float1:"pink.js", float2:"love()", float3:"beauty" },
+  { id:33, badge:"MINT GREEN", title:"سبز نعنایی", desc:"با سبز نعنایی، طراوت و شادابی را در پروژه‌های خود حس کنید.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80", float1:"mint.js", float2:"fresh()", float3:"pure" },
+  { id:34, badge:"AMBER", title:"کهربایی", desc:"با کهربایی، گرما و انرژی را به کد خود بیاورید.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", float1:"amber.js", float2:"warm()", float3:"glow" },
+  { id:35, badge:"PINK CORAL", title:"مرجانی صورتی", desc:"با مرجانی صورتی، زیبایی و زندگی را به کد خود اضافه کنید.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80", float1:"coral.js", float2:"life()", float3:"vibrant" },
+  { id:36, badge:"BLUE SKY", title:"آسمان آبی", desc:"با آسمان آبی، بی‌نهایتی و آزادی را در کد خود تجربه کنید.", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80", float1:"sky.js", float2:"infinite()", float3:"free" },
+  { id:37, badge:"GOLD SUN", title:"خورشید طلایی", desc:"با طلایی، ارزش و درخشش را به پروژه‌های خود بیاورید.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", float1:"gold.js", float2:"shine()", float3:"value" },
+  { id:38, badge:"ORANGE CORAL", title:"مرجانی نارنجی", desc:"با مرجانی نارنجی، انرژی و گرما را به کد خود اضافه کنید.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80", float1:"coral.js", float2:"energy()", float3:"warm" },
+  { id:39, badge:"TEAL", title:"فیروزه‌ای", desc:"با فیروزه‌ای، آرامش و تازگی را در پروژه‌های خود حس کنید.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80", float1:"teal.js", float2:"calm()", float3:"fresh" },
+  { id:40, badge:"PURPLE", title:"بنفش", desc:"با بنفش، خلاقیت و نوآوری را به کد خود بیاورید.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80", float1:"purple.js", float2:"create()", float3:"innovate" },
+  // 41-50
+  { id:41, badge:"GREEN", title:"سبز", desc:"با سبز، رشد و زندگی را در پروژه‌های خود جاری کنید.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80", float1:"green.js", float2:"grow()", float3:"life" },
+  { id:42, badge:"BLUE", title:"آبی", desc:"با آبی، آرامش و اعتماد را به کد خود اضافه کنید.", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80", float1:"blue.js", float2:"calm()", float3:"trust" },
+  { id:43, badge:"AMBER", title:"کهربایی", desc:"با کهربایی، گرما و انرژی را در پروژه‌های خود حس کنید.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", float1:"amber.js", float2:"warm()", float3:"glow" },
+  { id:44, badge:"CYAN", title:"فیروزه‌ای", desc:"با فیروزه‌ای، تازگی و شفافیت را به کد خود بیاورید.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80", float1:"cyan.js", float2:"clear()", float3:"pure" },
+  { id:45, badge:"PINK", title:"صورتی", desc:"با صورتی، لطافت و زیبایی را در پروژه‌های خود جاری کنید.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80", float1:"pink.js", float2:"soft()", float3:"elegant" },
+  { id:46, badge:"LIME", title:"لایمی", desc:"با لایمی، انرژی و سرعت را به کد خود اضافه کنید.", img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80", float1:"lime.js", float2:"fast()", float3:"fresh" },
+  { id:47, badge:"VIOLET", title:"بنفشه", desc:"با بنفشه، خلاقیت و عمق را در پروژه‌های خود حس کنید.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80", float1:"violet.js", float2:"deep()", float3:"royal" },
+  { id:48, badge:"ORANGE", title:"نارنجی", desc:"با نارنجی، انرژی و شادی را به کد خود بیاورید.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", float1:"orange.js", float2:"joy()", float3:"energy" },
+  { id:49, badge:"SKY", title:"آسمانی", desc:"با آسمانی، آزادی و بی‌نهایتی را در پروژه‌های خود تجربه کنید.", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80", float1:"sky.js", float2:"free()", float3:"infinite" },
+  { id:50, badge:"GOLD FINAL", title:"طلایی نهایی", desc:"با طلایی نهایی، بهترین و ارزشمندترین پروژه‌های خود را بسازید.", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&q=80", float1:"gold.final", float2:"best()", float3:"premium" }
+];
+
+// ============ ساخت هیروها ============
+const container = document.getElementById('heroesContainer');
+
+heroData.forEach((data, index) => {
+  const reverseClass = index % 2 === 1 ? 'reverse' : '';
+  
+  const heroHTML = `
+    <section class="hero h${data.id}" data-hero="${data.id}">
+      <div class="glow-orb"></div>
+      
+      <!-- کد تزئینی ترمینال -->
+      <div class="terminal-code" style="top: 20px; left: 20px;">
+        ${'01 10 11 00 01 10\n11 00 01 10 11 00\n01 10 11 00 01 10'}
+      </div>
+      
+      <div class="hero-content ${reverseClass}">
+        <div class="hero-text">
+          <span class="hero-badge">${data.badge}</span>
+          <h1 class="hero-title">${data.title}</h1>
+          <p class="hero-desc">${data.desc}</p>
+          <div class="hero-buttons">
+            <a href="#" class="btn btn-primary">
+              شروع کنید
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <a href="#" class="btn btn-outline">بیشتر بدانید</a>
+          </div>
+        </div>
+        
+        <div class="hero-image-wrap">
+          <img class="hero-image" src="${data.img}" alt="${data.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/520x400/1a1a2e/00ffff?text=${encodeURIComponent(data.title)}'">
+          <div class="float-card float-card-1">${data.float1}</div>
+          <div class="float-card float-card-2">${data.float2}</div>
+          <div class="float-card float-card-3">${data.float3}</div>
+        </div>
+      </div>
+    </section>
+  `;
+  
+  container.insertAdjacentHTML('beforeend', heroHTML);
+});
+
+// ============ ذرات شناور برای هر هیرو ============
+document.querySelectorAll('.hero').forEach(hero => {
+  for (let i = 0; i < 15; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    const size = 1 + Math.random() * 4;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.bottom = '-10px';
+    particle.style.animationDuration = (6 + Math.random() * 10) + 's';
+    particle.style.animationDelay = (Math.random() * 8) + 's';
+    particle.style.opacity = 0.3 + Math.random() * 0.5;
+    hero.appendChild(particle);
+  }
+});
+
+// ============ نوار پیشرفت اسکرول ============
+const progressBar = document.getElementById('progressBar');
+const currentHeroSpan = document.getElementById('currentHero');
+
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  progressBar.style.width = progress + '%';
+  
+  // شمارنده هیرو
+  const heroIndex = Math.min(50, Math.floor(scrollTop / window.innerHeight) + 1);
+  currentHeroSpan.textContent = heroIndex;
+});
+
+// ============ افکت پارالاکس و سه بعدی ============
+const heroSections = document.querySelectorAll('.hero');
+
+function handleParallax() {
+  const scrollY = window.scrollY;
+  const windowHeight = window.innerHeight;
+  
+  heroSections.forEach((hero, index) => {
+    const rect = hero.getBoundingClientRect();
+    const heroCenter = rect.top + rect.height / 2;
+    const distanceFromCenter = heroCenter - windowHeight / 2;
+    const progress = distanceFromCenter / windowHeight;
+    
+    // چرخش و جابجایی محتوا
+    const textEl = hero.querySelector('.hero-text');
+    const imageEl = hero.querySelector('.hero-image-wrap');
+    
+    if (textEl) {
+      const rotY = progress * 15;
+      const transZ = -Math.abs(progress) * 100;
+      textEl.style.transform = `perspective(1500px) rotateY(${rotY}deg) translateZ(${transZ}px)`;
+    }
+    
+    if (imageEl) {
+      const rotY = -progress * 15;
+      const transZ = -Math.abs(progress) * 150;
+      imageEl.style.transform = `perspective(1500px) rotateY(${rotY}deg) translateZ(${transZ}px)`;
+    }
+    
+    // اوپاسیتی
+    const opacity = Math.max(0, 1 - Math.abs(progress) * 0.9);
+    hero.querySelector('.hero-content').style.opacity = opacity;
+  });
+}
+
+// ============ ردیابی ماوس برای افکت سه بعدی ============
+heroSections.forEach(hero => {
+  hero.addEventListener('mousemove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    
+    const img = hero.querySelector('.hero-image');
+    if (img) {
+      img.style.transform = `rotateY(${x * 20}deg) rotateX(${-y * 20}deg) scale(1.02)`;
+    }
+  });
+  
+  hero.addEventListener('mouseleave', () => {
+    const img = hero.querySelector('.hero-image');
+    if (img) {
+      img.style.transform = 'rotateY(0) rotateX(0) scale(1)';
+    }
+  });
+});
+
+// ============ اجرا با requestAnimationFrame ============
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      handleParallax();
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+window.addEventListener('load', handleParallax);
+
+// ============ انیمیشن ورودی برای هر هیرو ============
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+heroSections.forEach(hero => {
+  observer.observe(hero);
+});
+
+console.log('🚀 ۵۰ هیرو سکشن سه بعدی با موفقیت بارگذاری شد!');
+</script>
+
+</body>
+</html>
