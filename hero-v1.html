@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>۱۰۰ هیرو سکشن سه بعدی حرفه‌ای | Pro Dev Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;700&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+/* ============================================
+   RESET & BASE
+============================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --neon-cyan: #00ffff;
+  --neon-pink: #ff00ff;
+  --neon-green: #00ff41;
+  --neon-purple: #a855f7;
+  --neon-orange: #ff6b00;
+  --deep-dark: #03030f;
+  --dark-1: #0a0a1a;
+  --dark-2: #12122a;
+  --dark-3: #1a1a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0c0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--deep-dark);
+  color: var(--text-primary);
+  font-family: 'Vazirmatn', sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+============================================ */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #050510;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ffff, #ff00ff, #00ff41);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff00ff, #00ffff, #ff00ff);
+}
+
+/* ============================================
+   LOADING SCREEN
+============================================ */
+.loader {
+  position: fixed;
+  inset: 0;
+  background: #03030f;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 60px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #00ffff, #ff00ff, #00ff41, #00ffff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 2s linear infinite;
+  margin-bottom: 40px;
+  letter-spacing: 5px;
+}
+
+.loader-bar {
+  width: 300px;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.loader-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00ffff, #ff00ff);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 20px #00ffff;
+}
+
+.loader-percent {
+  margin-top: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #00ffff;
+  font-size: 14px;
+}
+
+@keyframes shine {
+  to { background-position: 300% center; }
+}
+
+/* ============================================
+   PROGRESS BAR
+============================================ */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00ffff, #ff00ff, #00ff41, #f7df1e, #00ffff);
+  background-size: 300% auto;
+  z-index: 9999;
+  width: 0%;
+  animation: shine 3s linear infinite;
+  box-shadow: 0 0 20px rgba(0,255,255,0.8);
+}
+
+/* ============================================
+   NAVIGATION
+============================================ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 9998;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(0px);
+}
+
+.nav.scrolled {
+  background: rgba(10,10,26,0.85);
+  backdrop-filter: blur(20px);
+  padding: 12px 60px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.nav-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 3px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 35px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  right: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00ffff, #ff00ff);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #fff;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* ============================================
+   HERO COUNTER
+============================================ */
+.hero-counter {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  background: rgba(10,10,26,0.7);
+  backdrop-filter: blur(20px);
+  padding: 14px 28px;
+  border-radius: 50px;
+  border: 1px solid rgba(0,255,255,0.3);
+  z-index: 9997;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #00ffff;
+  box-shadow: 0 10px 40px rgba(0,255,255,0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-counter .dot {
+  width: 8px;
+  height: 8px;
+  background: #00ff41;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 0 10px #00ff41;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.hero-counter span.num {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ============================================
+   SIDE NAVIGATION DOTS
+============================================ */
+.side-nav {
+  position: fixed;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9997;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 10px;
+  scrollbar-width: none;
+}
+
+.side-nav::-webkit-scrollbar { display: none; }
+
+.side-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.side-dot:hover {
+  background: #00ffff;
+  transform: scale(1.5);
+  box-shadow: 0 0 15px #00ffff;
+}
+
+.side-dot.active {
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  box-shadow: 0 0 20px #00ffff;
+  transform: scale(1.3);
+}
+
+/* ============================================
+   HERO SECTION BASE
+============================================ */
+.hero {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 100px 60px 60px;
+  perspective: 2500px;
+  transform-style: preserve-3d;
+  isolation: isolate;
+}
+
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 70px;
+  max-width: 1500px;
+  width: 100%;
+  align-items: center;
+  transform-style: preserve-3d;
+  position: relative;
+  z-index: 10;
+}
+
+.hero-content.reverse {
+  direction: ltr;
+}
+
+.hero-content.reverse > * {
+  direction: rtl;
+}
+
+.hero-text {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+  text-transform: uppercase;
+  font-family: 'Orbitron', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  animation: badgeShine 3s infinite;
+}
+
+@keyframes badgeShine {
+  to { transform: translateX(100%); }
+}
+
+.hero-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+  animation: pulse 1.5s infinite;
+}
+
+.hero-title {
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: clamp(42px, 5.5vw, 84px);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 28px;
+  letter-spacing: -2px;
+}
+
+.hero-desc {
+  font-size: 17px;
+  line-height: 2;
+  opacity: 0.85;
+  margin-bottom: 40px;
+  max-width: 580px;
+  color: var(--text-secondary);
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  padding: 18px 40px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  font-family: 'Vazirmatn', sans-serif;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.btn:hover::before {
+  transform: translateX(100%);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00ffff, #00bfff);
+  color: #000;
+  box-shadow: 0 15px 45px rgba(0,255,255,0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 25px 60px rgba(0,255,255,0.7);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+}
+
+.btn-outline:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.7);
+  transform: translateY(-5px);
+}
+
+.btn svg {
+  transition: transform 0.3s ease;
+}
+
+.btn:hover svg {
+  transform: translateX(-6px);
+}
+
+/* ============================================
+   HERO MEDIA (IMAGE + VIDEO)
+============================================ */
+.hero-image-wrap {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 550px;
+}
+
+.hero-media-frame {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow:
+    0 60px 120px rgba(0,0,0,0.7),
+    0 0 60px rgba(0,255,255,0.15),
+    inset 0 0 0 1px rgba(255,255,255,0.1);
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+  z-index: 2;
+}
+
+.hero-media-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(0,255,255,0.1) 50%, transparent 100%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.hero-media {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s ease;
+}
+
+.hero-media-frame:hover .hero-media {
+  transform: scale(1.08);
+}
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 2;
+}
+
+.hero-media-frame:hover .hero-video {
+  opacity: 1;
+}
+
+/* Frame corner decorations */
+.frame-corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #00ffff;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.frame-corner.tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+.frame-corner.tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+.frame-corner.bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+.frame-corner.br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+/* ============================================
+   FLOATING CODE CARDS
+============================================ */
+.float-card {
+  position: absolute;
+  background: rgba(15,15,35,0.92);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 16px 22px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 15;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+  white-space: nowrap;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.float-card::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff5f56;
+  box-shadow: 14px 0 0 #ffbd2e, 28px 0 0 #27c93f;
+}
+
+.float-card .code-line {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.float-card .code-key {
+  color: #ff79c6;
+}
+
+.float-card .code-val {
+  color: #50fa7b;
+}
+
+.float-card .code-comment {
+  color: #6272a4;
+}
+
+.float-card-1 { top: 30px; right: -30px; animation: floatCard 5s ease-in-out infinite; }
+.float-card-2 { bottom: 60px; left: -40px; animation: floatCard 5s ease-in-out infinite 1.5s; }
+.float-card-3 { top: 55%; right: -50px; animation: floatCard 5s ease-in-out infinite 0.8s; }
+.float-card-4 { bottom: 20px; right: 20px; animation: floatCard 5s ease-in-out infinite 2.2s; }
+.float-card-5 { top: 15px; left: -40px; animation: floatCard 5s ease-in-out infinite 1.1s; }
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0) translateZ(60px) rotateY(-5deg); }
+  50% { transform: translateY(-18px) translateZ(80px) rotateY(5deg); }
+}
+
+/* ============================================
+   GLOW ORBS
+============================================ */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.orb-1 { width: 600px; height: 600px; top: -150px; right: -150px; }
+.orb-2 { width: 500px; height: 500px; bottom: -150px; left: -150px; }
+.orb-3 { width: 400px; height: 400px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+/* ============================================
+   GRID PATTERN BACKGROUND
+============================================ */
+.grid-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,255,0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: 1;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+/* ============================================
+   SCROLL INDICATOR
+============================================ */
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.6;
+  animation: bounceDown 2s infinite;
+}
+
+.scroll-indicator span {
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+}
+
+.scroll-mouse {
+  width: 24px;
+  height: 40px;
+  border: 2px solid rgba(255,255,255,0.5);
+  border-radius: 12px;
+  position: relative;
+}
+
+.scroll-mouse::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 8px;
+  background: #00ffff;
+  border-radius: 3px;
+  animation: scrollWheel 1.5s infinite;
+}
+
+@keyframes scrollWheel {
+  0% { opacity: 0; transform: translate(-50%, 0); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, 15px); }
+}
+
+@keyframes bounceDown {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ============================================
+   PARTICLES
+============================================ */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ============================================
+   THEME: CYBERPUNK (H1)
+============================================ */
+.h1 {
+  background: radial-gradient(ellipse at top right, #1a0033 0%, #03030f 60%);
+}
+.h1 .orb-1 { background: #ff00ff; opacity: 0.35; }
+.h1 .orb-2 { background: #00ffff; opacity: 0.3; }
+.h1 .hero-badge { background: rgba(255,0,255,0.12); color: #ff00ff; border: 1px solid rgba(255,0,255,0.4); }
+.h1 .hero-title {
+  background: linear-gradient(120deg, #ff00ff, #00ffff, #ff00ff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h1 .btn-primary { background: linear-gradient(135deg, #ff00ff, #00bfff); box-shadow: 0 15px 45px rgba(255,0,255,0.4); }
+.h1 .frame-corner { border-color: #ff00ff; }
+
+/* ============================================
+   THEME: MATRIX (H2)
+============================================ */
+.h2 { background: #000; }
+.h2 .orb-1 { background: #00ff41; opacity: 0.15; top: 50%; right: 50%; }
+.h2 .hero-badge { background: rgba(0,255,65,0.1); color: #00ff41; border: 1px solid rgba(0,255,65,0.3); }
+.h2 .hero-title { color: #00ff41; text-shadow: 0 0 40px rgba(0,255,65,0.7); font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
+.h2 .hero-desc { color: #00ff41; opacity: 0.7; font-family: 'JetBrains Mono', monospace; }
+.h2 .btn-primary { background: #00ff41; color: #000; box-shadow: 0 15px 45px rgba(0,255,65,0.5); }
+.h2 .frame-corner { border-color: #00ff41; }
+
+/* ============================================
+   THEME: OCEAN (H3)
+============================================ */
+.h3 { background: linear-gradient(180deg, #001f3f 0%, #003366 50%, #00509e 100%); }
+.h3 .orb-1 { background: #00bfff; opacity: 0.5; }
+.h3 .orb-2 { background: #7ec8e3; opacity: 0.4; }
+.h3 .hero-badge { background: rgba(0,191,255,0.15); color: #7ec8e3; border: 1px solid rgba(0,191,255,0.4); }
+.h3 .hero-title {
+  background: linear-gradient(90deg, #7ec8e3, #ffffff, #00bfff, #7ec8e3);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h3 .btn-primary { background: linear-gradient(135deg, #00bfff, #7ec8e3); color: #000; }
+.h3 .frame-corner { border-color: #7ec8e3; }
+
+/* ============================================
+   THEME: FIRE (H4)
+============================================ */
+.h4 { background: radial-gradient(ellipse at bottom, #2a0800 0%, #03030f 65%); }
+.h4 .orb-1 { background: #ff4500; opacity: 0.5; }
+.h4 .orb-2 { background: #ffd700; opacity: 0.35; }
+.h4 .hero-badge { background: rgba(255,69,0,0.15); color: #ff6b00; border: 1px solid rgba(255,69,0,0.4); }
+.h4 .hero-title {
+  background: linear-gradient(120deg, #f12711, #f5af19, #f12711);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h4 .btn-primary { background: linear-gradient(135deg, #f12711, #f5af19); box-shadow: 0 15px 45px rgba(255,69,0,0.5); }
+.h4 .frame-corner { border-color: #ff6b00; }
+
+/* ============================================
+   THEME: ICE (H5)
+============================================ */
+.h5 { background: linear-gradient(180deg, #0a1628, #1a3a5c, #2d5f8a); }
+.h5 .orb-1 { background: #6dd5ed; opacity: 0.4; }
+.h5 .orb-2 { background: #ffffff; opacity: 0.2; }
+.h5 .hero-badge { background: rgba(109,213,237,0.15); color: #6dd5ed; border: 1px solid rgba(109,213,237,0.4); }
+.h5 .hero-title {
+  background: linear-gradient(90deg, #ffffff, #6dd5ed, #ffffff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h5 .btn-primary { background: linear-gradient(135deg, #6dd5ed, #2193b0); color: #000; }
+.h5 .frame-corner { border-color: #6dd5ed; }
+
+/* ============================================
+   THEME: GOLD (H6)
+============================================ */
+.h6 { background: linear-gradient(135deg, #0a0a0a, #1a1a1a); }
+.h6 .orb-1 { background: #d4af37; opacity: 0.35; }
+.h6 .hero-badge { background: rgba(212,175,55,0.15); color: #d4af37; border: 1px solid rgba(212,175,55,0.4); }
+.h6 .hero-title {
+  background: linear-gradient(120deg, #d4af37, #ffd700, #d4af37);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+}
+.h6 .btn-primary { background: linear-gradient(135deg, #d4af37, #ffd700); color: #000; }
+.h6 .frame-corner { border-color: #d4af37; }
+
+/* ============================================
+   THEME: GALAXY (H7)
+============================================ */
+.h7 { background: radial-gradient(ellipse at top, #2b1055 0%, #03030f 65%); }
+.h7 .orb-1 { background: #a78bfa; opacity: 0.4; }
+.h7 .orb-2 { background: #7c3aed; opacity: 0.35; }
+.h7 .hero-badge { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.4); }
+.h7 .hero-title {
+  background: linear-gradient(90deg, #a78bfa, #ffffff, #a78bfa);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h7 .btn-primary { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+.h7 .frame-corner { border-color: #a78bfa; }
+
+/* ============================================
+   THEME: RED (H8)
+============================================ */
+.h8 { background: radial-gradient(ellipse at center, #2a0000 0%, #03030f 65%); }
+.h8 .orb-1 { background: #ff3333; opacity: 0.35; }
+.h8 .hero-badge { background: rgba(255,51,51,0.15); color: #ff3333; border: 1px solid rgba(255,51,51,0.4); }
+.h8 .hero-title { color: #ff3333; text-shadow: 0 0 40px rgba(255,51,51,0.6); }
+.h8 .btn-primary { background: linear-gradient(135deg, #ff3333, #ff6666); }
+.h8 .frame-corner { border-color: #ff3333; }
+
+/* ============================================
+   THEME: EMERALD (H9)
+============================================ */
+.h9 { background: linear-gradient(135deg, #002020, #005050); }
+.h9 .orb-1 { background: #10b981; opacity: 0.4; }
+.h9 .hero-badge { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.4); }
+.h9 .hero-title {
+  background: linear-gradient(90deg, #10b981, #6ee7b7, #10b981);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h9 .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: #000; }
+.h9 .frame-corner { border-color: #10b981; }
+
+/* ============================================
+   THEME: SUNSET (H10)
+============================================ */
+.h10 { background: linear-gradient(180deg, #ff512f 0%, #dd2476 100%); }
+.h10 .orb-1 { background: #ffd700; opacity: 0.5; }
+.h10 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.h10 .hero-title { color: #fff; text-shadow: 0 4px 40px rgba(0,0,0,0.5); }
+.h10 .hero-desc { color: rgba(255,255,255,0.9); }
+.h10 .btn-primary { background: #fff; color: #dd2476; box-shadow: 0 15px 45px rgba(255,255,255,0.4); }
+.h10 .frame-corner { border-color: #fff; }
+
+/* ============================================
+   THEME: NEON NIGHTS (H11)
+============================================ */
+.h11 { background: radial-gradient(ellipse at top right, #1a0033 0%, #03030f 65%); }
+.h11 .orb-1 { background: #e94560; opacity: 0.4; }
+.h11 .hero-badge { background: rgba(233,69,96,0.15); color: #e94560; border: 1px solid rgba(233,69,96,0.4); }
+.h11 .hero-title {
+  background: linear-gradient(120deg, #e94560, #f5a623, #e94560);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h11 .btn-primary { background: linear-gradient(135deg, #e94560, #f5a623); }
+.h11 .frame-corner { border-color: #e94560; }
+
+/* ============================================
+   THEME: DEEP FOREST (H12)
+============================================ */
+.h12 { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+.h12 .orb-1 { background: #00ff96; opacity: 0.4; }
+.h12 .hero-badge { background: rgba(0,255,150,0.15); color: #00ff96; border: 1px solid rgba(0,255,150,0.4); }
+.h12 .hero-title { color: #00ff96; text-shadow: 0 0 40px rgba(0,255,150,0.5); }
+.h12 .btn-primary { background: linear-gradient(135deg, #00ff96, #00bfff); color: #000; }
+.h12 .frame-corner { border-color: #00ff96; }
+
+/* ============================================
+   THEME: PINK NEON (H13)
+============================================ */
+.h13 { background: #1a001a; }
+.h13 .orb-1 { background: #ff00ff; opacity: 0.4; }
+.h13 .hero-badge { background: rgba(255,0,255,0.15); color: #ff00ff; border: 1px solid rgba(255,0,255,0.4); }
+.h13 .hero-title { color: #ff00ff; text-shadow: 0 0 40px rgba(255,0,255,0.6); }
+.h13 .btn-primary { background: linear-gradient(135deg, #ff00ff, #ff66ff); }
+.h13 .frame-corner { border-color: #ff00ff; }
+
+/* ============================================
+   THEME: ORANGE BURST (H14)
+============================================ */
+.h14 { background: radial-gradient(ellipse at bottom, #1a1000 0%, #03030f 65%); }
+.h14 .orb-1 { background: #ffa500; opacity: 0.4; }
+.h14 .hero-badge { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.4); }
+.h14 .hero-title {
+  background: linear-gradient(90deg, #ffa500, #ffd700, #ffa500);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h14 .btn-primary { background: linear-gradient(135deg, #ffa500, #ffd700); color: #000; }
+.h14 .frame-corner { border-color: #ffa500; }
+
+/* ============================================
+   THEME: BLUE OCEAN (H15)
+============================================ */
+.h15 { background: linear-gradient(135deg, #000428, #004e92); }
+.h15 .orb-1 { background: #00d4ff; opacity: 0.4; }
+.h15 .hero-badge { background: rgba(0,212,255,0.15); color: #00d4ff; border: 1px solid rgba(0,212,255,0.4); }
+.h15 .hero-title {
+  background: linear-gradient(90deg, #00d4ff, #ffffff, #00d4ff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h15 .btn-primary { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #000; }
+.h15 .frame-corner { border-color: #00d4ff; }
+
+/* ============================================
+   THEME: PURPLE HAZE (H16)
+============================================ */
+.h16 { background: radial-gradient(ellipse at top, #2d1b4e 0%, #03030f 65%); }
+.h16 .orb-1 { background: #b537f2; opacity: 0.4; }
+.h16 .hero-badge { background: rgba(181,55,242,0.15); color: #b537f2; border: 1px solid rgba(181,55,242,0.4); }
+.h16 .hero-title {
+  background: linear-gradient(90deg, #b537f2, #ff66ff, #b537f2);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h16 .btn-primary { background: linear-gradient(135deg, #b537f2, #7c3aed); }
+.h16 .frame-corner { border-color: #b537f2; }
+
+/* ============================================
+   THEME: TEAL TECH (H17)
+============================================ */
+.h17 { background: linear-gradient(135deg, #004d40, #00695c, #00897b); }
+.h17 .orb-1 { background: #64ffda; opacity: 0.4; }
+.h17 .hero-badge { background: rgba(100,255,218,0.15); color: #64ffda; border: 1px solid rgba(100,255,218,0.4); }
+.h17 .hero-title { color: #64ffda; text-shadow: 0 0 40px rgba(100,255,218,0.5); }
+.h17 .btn-primary { background: linear-gradient(135deg, #64ffda, #1de9b6); color: #000; }
+.h17 .frame-corner { border-color: #64ffda; }
+
+/* ============================================
+   THEME: CRIMSON (H18)
+============================================ */
+.h18 { background: radial-gradient(ellipse at center, #1a0000 0%, #03030f 65%); }
+.h18 .orb-1 { background: #ff1744; opacity: 0.4; }
+.h18 .hero-badge { background: rgba(255,23,68,0.15); color: #ff1744; border: 1px solid rgba(255,23,68,0.4); }
+.h18 .hero-title {
+  background: linear-gradient(90deg, #ff1744, #ff9100, #ff1744);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h18 .btn-primary { background: linear-gradient(135deg, #ff1744, #ff9100); }
+.h18 .frame-corner { border-color: #ff1744; }
+
+/* ============================================
+   THEME: INDIGO (H19)
+============================================ */
+.h19 { background: linear-gradient(135deg, #0a0a1a, #1a1a3a); }
+.h19 .orb-1 { background: #7c4dff; opacity: 0.4; }
+.h19 .hero-badge { background: rgba(124,77,255,0.15); color: #7c4dff; border: 1px solid rgba(124,77,255,0.4); }
+.h19 .hero-title { color: #7c4dff; text-shadow: 0 0 40px rgba(124,77,255,0.5); }
+.h19 .btn-primary { background: linear-gradient(135deg, #7c4dff, #b388ff); }
+.h19 .frame-corner { border-color: #7c4dff; }
+
+/* ============================================
+   THEME: AMBER (H20)
+============================================ */
+.h20 { background: radial-gradient(ellipse at bottom, #2a1a00 0%, #03030f 65%); }
+.h20 .orb-1 { background: #ffc107; opacity: 0.4; }
+.h20 .hero-badge { background: rgba(255,193,7,0.15); color: #ffc107; border: 1px solid rgba(255,193,7,0.4); }
+.h20 .hero-title {
+  background: linear-gradient(90deg, #ffc107, #ff9800, #ffc107);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h20 .btn-primary { background: linear-gradient(135deg, #ffc107, #ff9800); color: #000; }
+.h20 .frame-corner { border-color: #ffc107; }
+
+/* ============================================
+   GENERAL PATTERNS (for 21-100)
+============================================ */
+.h21 { background: linear-gradient(135deg, #1a0033, #330066); }
+.h21 .orb-1 { background: #e91e63; opacity: 0.4; }
+.h21 .hero-badge { background: rgba(233,30,99,0.15); color: #e91e63; border: 1px solid rgba(233,30,99,0.4); }
+.h21 .hero-title { color: #e91e63; text-shadow: 0 0 40px rgba(233,30,99,0.5); }
+.h21 .btn-primary { background: linear-gradient(135deg, #e91e63, #f06292); }
+.h21 .frame-corner { border-color: #e91e63; }
+
+.h22 { background: radial-gradient(ellipse at top, #001a1a 0%, #03030f 65%); }
+.h22 .orb-1 { background: #00e5ff; opacity: 0.4; }
+.h22 .hero-badge { background: rgba(0,229,255,0.15); color: #00e5ff; border: 1px solid rgba(0,229,255,0.4); }
+.h22 .hero-title {
+  background: linear-gradient(90deg, #00e5ff, #18ffff, #00e5ff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h22 .btn-primary { background: linear-gradient(135deg, #00e5ff, #00b8d4); color: #000; }
+.h22 .frame-corner { border-color: #00e5ff; }
+
+.h23 { background: linear-gradient(135deg, #2a0800, #4a1000); }
+.h23 .orb-1 { background: #ff6d00; opacity: 0.4; }
+.h23 .hero-badge { background: rgba(255,109,0,0.15); color: #ff6d00; border: 1px solid rgba(255,109,0,0.4); }
+.h23 .hero-title { color: #ff6d00; text-shadow: 0 0 40px rgba(255,109,0,0.5); }
+.h23 .btn-primary { background: linear-gradient(135deg, #ff6d00, #ffab00); color: #000; }
+.h23 .frame-corner { border-color: #ff6d00; }
+
+.h24 { background: radial-gradient(ellipse at bottom, #0a1a0a 0%, #03030f 65%); }
+.h24 .orb-1 { background: #76ff03; opacity: 0.4; }
+.h24 .hero-badge { background: rgba(118,255,3,0.15); color: #76ff03; border: 1px solid rgba(118,255,3,0.4); }
+.h24 .hero-title {
+  background: linear-gradient(90deg, #76ff03, #b2ff59, #76ff03);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h24 .btn-primary { background: linear-gradient(135deg, #76ff03, #64dd17); color: #000; }
+.h24 .frame-corner { border-color: #76ff03; }
+
+.h25 { background: linear-gradient(135deg, #1a001a, #330033); }
+.h25 .orb-1 { background: #d500f9; opacity: 0.4; }
+.h25 .hero-badge { background: rgba(213,0,249,0.15); color: #d500f9; border: 1px solid rgba(213,0,249,0.4); }
+.h25 .hero-title { color: #d500f9; text-shadow: 0 0 40px rgba(213,0,249,0.5); }
+.h25 .btn-primary { background: linear-gradient(135deg, #d500f9, #e040fb); }
+.h25 .frame-corner { border-color: #d500f9; }
+
+.h26 { background: radial-gradient(ellipse at top left, #001a33 0%, #03030f 65%); }
+.h26 .orb-1 { background: #2979ff; opacity: 0.4; }
+.h26 .hero-badge { background: rgba(41,121,255,0.15); color: #2979ff; border: 1px solid rgba(41,121,255,0.4); }
+.h26 .hero-title {
+  background: linear-gradient(90deg, #2979ff, #82b1ff, #2979ff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h26 .btn-primary { background: linear-gradient(135deg, #2979ff, #2962ff); color: #000; }
+.h26 .frame-corner { border-color: #2979ff; }
+
+.h27 { background: linear-gradient(135deg, #1a1a00, #333300); }
+.h27 .orb-1 { background: #ffea00; opacity: 0.4; }
+.h27 .hero-badge { background: rgba(255,234,0,0.15); color: #ffea00; border: 1px solid rgba(255,234,0,0.4); }
+.h27 .hero-title { color: #ffea00; text-shadow: 0 0 40px rgba(255,234,0,0.5); }
+.h27 .btn-primary { background: linear-gradient(135deg, #ffea00, #fdd835); color: #000; }
+.h27 .frame-corner { border-color: #ffea00; }
+
+.h28 { background: radial-gradient(ellipse at bottom, #1a0000 0%, #03030f 65%); }
+.h28 .orb-1 { background: #ff5252; opacity: 0.4; }
+.h28 .hero-badge { background: rgba(255,82,82,0.15); color: #ff5252; border: 1px solid rgba(255,82,82,0.4); }
+.h28 .hero-title { color: #ff5252; text-shadow: 0 0 40px rgba(255,82,82,0.5); }
+.h28 .btn-primary { background: linear-gradient(135deg, #ff5252, #ff8a80); }
+.h28 .frame-corner { border-color: #ff5252; }
+
+.h29 { background: linear-gradient(135deg, #001a1a, #003333); }
+.h29 .orb-1 { background: #1de9b6; opacity: 0.4; }
+.h29 .hero-badge { background: rgba(29,233,182,0.15); color: #1de9b6; border: 1px solid rgba(29,233,182,0.4); }
+.h29 .hero-title {
+  background: linear-gradient(90deg, #1de9b6, #a7ffeb, #1de9b6);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.h29 .btn-primary { background: linear-gradient(135deg, #1de9b6, #00bfa5); color: #000; }
+.h29 .frame-corner { border-color: #1de9b6; }
+
+.h30 { background: radial-gradient(ellipse at center, #1a0a1a 0%, #03030f 65%); }
+.h30 .orb-1 { background: #f50057; opacity: 0.4; }
+.h30 .hero-badge { background: rgba(245,0,87,0.15); color: #f50057; border: 1px solid rgba(245,0,87,0.4); }
+.h30 .hero-title { color: #f50057; text-shadow: 0 0 40px rgba(245,0,87,0.5); }
+.h30 .btn-primary { background: linear-gradient(135deg, #f50057, #ff4081); }
+.h30 .frame-corner { border-color: #f50057; }
+
+/* ============ H31-H100 با پترن‌های متنوع ============ */
+${'' }
+.h31 { background: linear-gradient(135deg, #0a0a2a, #1a1a4a); }
+.h31 .orb-1 { background: #536dfe; opacity: 0.4; }
+.h31 .hero-title { color: #536dfe; text-shadow: 0 0 40px rgba(83,109,254,0.5); }
+.h31 .hero-badge { background: rgba(83,109,254,0.15); color: #536dfe; border: 1px solid rgba(83,109,254,0.4); }
+.h31 .btn-primary { background: linear-gradient(135deg, #536dfe, #3d5afe); }
+.h31 .frame-corner { border-color: #536dfe; }
+
+.h32 { background: radial-gradient(ellipse at top, #1a001a 0%, #03030f 65%); }
+.h32 .orb-1 { background: #ea80fc; opacity: 0.4; }
+.h32 .hero-title { color: #ea80fc; text-shadow: 0 0 40px rgba(234,128,252,0.5); }
+.h32 .hero-badge { background: rgba(234,128,252,0.15); color: #ea80fc; border: 1px solid rgba(234,128,252,0.4); }
+.h32 .btn-primary { background: linear-gradient(135deg, #ea80fc, #ce93d8); }
+.h32 .frame-corner { border-color: #ea80fc; }
+
+.h33 { background: linear-gradient(135deg, #001a0d, #003320); }
+.h33 .orb-1 { background: #00e676; opacity: 0.4; }
+.h33 .hero-title { color: #00e676; text-shadow: 0 0 40px rgba(0,230,118,0.5); }
+.h33 .hero-badge { background: rgba(0,230,118,0.15); color: #00e676; border: 1px solid rgba(0,230,118,0.4); }
+.h33 .btn-primary { background: linear-gradient(135deg, #00e676, #00c853); color: #000; }
+.h33 .frame-corner { border-color: #00e676; }
+
+.h34 { background: radial-gradient(ellipse at bottom, #0a0a1a 0%, #03030f 65%); }
+.h34 .orb-1 { background: #ffab40; opacity: 0.4; }
+.h34 .hero-title { color: #ffab40; text-shadow: 0 0 40px rgba(255,171,64,0.5); }
+.h34 .hero-badge { background: rgba(255,171,64,0.15); color: #ffab40; border: 1px solid rgba(255,171,64,0.4); }
+.h34 .btn-primary { background: linear-gradient(135deg, #ffab40, #ff9100); color: #000; }
+.h34 .frame-corner { border-color: #ffab40; }
+
+.h35 { background: linear-gradient(135deg, #1a000d, #33001a); }
+.h35 .orb-1 { background: #ff80ab; opacity: 0.4; }
+.h35 .hero-title { color: #ff80ab; text-shadow: 0 0 40px rgba(255,128,171,0.5); }
+.h35 .hero-badge { background: rgba(255,128,171,0.15); color: #ff80ab; border: 1px solid rgba(255,128,171,0.4); }
+.h35 .btn-primary { background: linear-gradient(135deg, #ff80ab, #f50057); }
+.h35 .frame-corner { border-color: #ff80ab; }
+
+.h36 { background: radial-gradient(ellipse at top, #0d1a2a 0%, #03030f 65%); }
+.h36 .orb-1 { background: #40c4ff; opacity: 0.4; }
+.h36 .hero-title { color: #40c4ff; text-shadow: 0 0 40px rgba(64,196,255,0.5); }
+.h36 .hero-badge { background: rgba(64,196,255,0.15); color: #40c4ff; border: 1px solid rgba(64,196,255,0.4); }
+.h36 .btn-primary { background: linear-gradient(135deg, #40c4ff, #0091ea); color: #000; }
+.h36 .frame-corner { border-color: #40c4ff; }
+
+.h37 { background: linear-gradient(135deg, #1a1a0d, #333320); }
+.h37 .orb-1 { background: #ffd600; opacity: 0.4; }
+.h37 .hero-title { color: #ffd600; text-shadow: 0 0 40px rgba(255,214,0,0.5); }
+.h37 .hero-badge { background: rgba(255,214,0,0.15); color: #ffd600; border: 1px solid rgba(255,214,0,0.4); }
+.h37 .btn-primary { background: linear-gradient(135deg, #ffd600, #ffab00); color: #000; }
+.h37 .frame-corner { border-color: #ffd600; }
+
+.h38 { background: radial-gradient(ellipse at bottom, #1a0d00 0%, #03030f 65%); }
+.h38 .orb-1 { background: #ff6e40; opacity: 0.4; }
+.h38 .hero-title { color: #ff6e40; text-shadow: 0 0 40px rgba(255,110,64,0.5); }
+.h38 .hero-badge { background: rgba(255,110,64,0.15); color: #ff6e40; border: 1px solid rgba(255,110,64,0.4); }
+.h38 .btn-primary { background: linear-gradient(135deg, #ff6e40, #ff3d00); }
+.h38 .frame-corner { border-color: #ff6e40; }
+
+.h39 { background: linear-gradient(135deg, #001a1a, #002a2a); }
+.h39 .orb-1 { background: #18ffff; opacity: 0.4; }
+.h39 .hero-title { color: #18ffff; text-shadow: 0 0 40px rgba(24,255,255,0.5); }
+.h39 .hero-badge { background: rgba(24,255,255,0.15); color: #18ffff; border: 1px solid rgba(24,255,255,0.4); }
+.h39 .btn-primary { background: linear-gradient(135deg, #18ffff, #00b8d4); color: #000; }
+.h39 .frame-corner { border-color: #18ffff; }
+
+.h40 { background: radial-gradient(ellipse at center, #1a0a1a 0%, #03030f 65%); }
+.h40 .orb-1 { background: #b388ff; opacity: 0.4; }
+.h40 .hero-title { color: #b388ff; text-shadow: 0 0 40px rgba(179,136,255,0.5); }
+.h40 .hero-badge { background: rgba(179,136,255,0.15); color: #b388ff; border: 1px solid rgba(179,136,255,0.4); }
+.h40 .btn-primary { background: linear-gradient(135deg, #b388ff, #7c4dff); }
+.h40 .frame-corner { border-color: #b388ff; }
+
+.h41 { background: linear-gradient(135deg, #0a1a0a, #1a3a1a); }
+.h41 .orb-1 { background: #69f0ae; opacity: 0.4; }
+.h41 .hero-title { color: #69f0ae; text-shadow: 0 0 40px rgba(105,240,174,0.5); }
+.h41 .hero-badge { background: rgba(105,240,174,0.15); color: #69f0ae; border: 1px solid rgba(105,240,174,0.4); }
+.h41 .btn-primary { background: linear-gradient(135deg, #69f0ae, #00e676); color: #000; }
+.h41 .frame-corner { border-color: #69f0ae; }
+
+.h42 { background: radial-gradient(ellipse at top, #1a1a2a 0%, #03030f 65%); }
+.h42 .orb-1 { background: #8c9eff; opacity: 0.4; }
+.h42 .hero-title { color: #8c9eff; text-shadow: 0 0 40px rgba(140,158,255,0.5); }
+.h42 .hero-badge { background: rgba(140,158,255,0.15); color: #8c9eff; border: 1px solid rgba(140,158,255,0.4); }
+.h42 .btn-primary { background: linear-gradient(135deg, #8c9eff, #536dfe); }
+.h42 .frame-corner { border-color: #8c9eff; }
+
+.h43 { background: linear-gradient(135deg, #1a0a00, #2a1500); }
+.h43 .orb-1 { background: #ffab00; opacity: 0.4; }
+.h43 .hero-title { color: #ffab00; text-shadow: 0 0 40px rgba(255,171,0,0.5); }
+.h43 .hero-badge { background: rgba(255,171,0,0.15); color: #ffab00; border: 1px solid rgba(255,171,0,0.4); }
+.h43 .btn-primary { background: linear-gradient(135deg, #ffab00, #ff8f00); color: #000; }
+.h43 .frame-corner { border-color: #ffab00; }
+
+.h44 { background: radial-gradient(ellipse at bottom, #0a1a1a 0%, #03030f 65%); }
+.h44 .orb-1 { background: #84ffff; opacity: 0.4; }
+.h44 .hero-title { color: #84ffff; text-shadow: 0 0 40px rgba(132,255,255,0.5); }
+.h44 .hero-badge { background: rgba(132,255,255,0.15); color: #84ffff; border: 1px solid rgba(132,255,255,0.4); }
+.h44 .btn-primary { background: linear-gradient(135deg, #84ffff, #18ffff); color: #000; }
+.h44 .frame-corner { border-color: #84ffff; }
+
+.h45 { background: linear-gradient(135deg, #1a0a1a, #2a0a2a); }
+.h45 .orb-1 { background: #ff80ab; opacity: 0.4; }
+.h45 .hero-title { color: #ff80ab; text-shadow: 0 0 40px rgba(255,128,171,0.5); }
+.h45 .hero-badge { background: rgba(255,128,171,0.15); color: #ff80ab; border: 1px solid rgba(255,128,171,0.4); }
+.h45 .btn-primary { background: linear-gradient(135deg, #ff80ab, #f50057); }
+.h45 .frame-corner { border-color: #ff80ab; }
+
+.h46 { background: radial-gradient(ellipse at top, #0d1a0d 0%, #03030f 65%); }
+.h46 .orb-1 { background: #b2ff59; opacity: 0.4; }
+.h46 .hero-title { color: #b2ff59; text-shadow: 0 0 40px rgba(178,255,89,0.5); }
+.h46 .hero-badge { background: rgba(178,255,89,0.15); color: #b2ff59; border: 1px solid rgba(178,255,89,0.4); }
+.h46 .btn-primary { background: linear-gradient(135deg, #b2ff59, #76ff03); color: #000; }
+.h46 .frame-corner { border-color: #b2ff59; }
+
+.h47 { background: linear-gradient(135deg, #1a0d2a, #2d1a4a); }
+.h47 .orb-1 { background: #ce93d8; opacity: 0.4; }
+.h47 .hero-title { color: #ce93d8; text-shadow: 0 0 40px rgba(206,147,216,0.5); }
+.h47 .hero-badge { background: rgba(206,147,216,0.15); color: #ce93d8; border: 1px solid rgba(206,147,216,0.4); }
+.h47 .btn-primary { background: linear-gradient(135deg, #ce93d8, #ab47bc); }
+.h47 .frame-corner { border-color: #ce93d8; }
+
+.h48 { background: radial-gradient(ellipse at bottom, #1a0a00 0%, #03030f 65%); }
+.h48 .orb-1 { background: #ff9100; opacity: 0.4; }
+.h48 .hero-title { color: #ff9100; text-shadow: 0 0 40px rgba(255,145,0,0.5); }
+.h48 .hero-badge { background: rgba(255,145,0,0.15); color: #ff9100; border: 1px solid rgba(255,145,0,0.4); }
+.h48 .btn-primary { background: linear-gradient(135deg, #ff9100, #ff6d00); color: #000; }
+.h48 .frame-corner { border-color: #ff9100; }
+
+.h49 { background: linear-gradient(135deg, #0a1a2a, #1a2a4a); }
+.h49 .orb-1 { background: #82b1ff; opacity: 0.4; }
+.h49 .hero-title { color: #82b1ff; text-shadow: 0 0 40px rgba(130,177,255,0.5); }
+.h49 .hero-badge { background: rgba(130,177,255,0.15); color: #82b1ff; border: 1px solid rgba(130,177,255,0.4); }
+.h49 .btn-primary { background: linear-gradient(135deg, #82b1ff, #448aff); }
+.h49 .frame-corner { border-color: #82b1ff; }
+
+.h50 { background: radial-gradient(ellipse at center, #2a1a0a 0%, #03030f 65%); }
+.h50 .orb-1 { background: #ffd740; opacity: 0.4; }
+.h50 .hero-title { color: #ffd740; text-shadow: 0 0 40px rgba(255,215,64,0.5); }
+.h50 .hero-badge { background: rgba(255,215,64,0.15); color: #ffd740; border: 1px solid rgba(255,215,64,0.4); }
+.h50 .btn-primary { background: linear-gradient(135deg, #ffd740, #ffc400); color: #000; }
+.h50 .frame-corner { border-color: #ffd740; }
+
+${'' }
+
+/* ============================================
+   MARQUEE / TICKER
+============================================ */
+.marquee-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(20px);
+  padding: 12px 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  z-index: 15;
+}
+
+.marquee {
+  display: flex;
+  gap: 50px;
+  animation: marquee 30s linear infinite;
+  white-space: nowrap;
+}
+
+.marquee span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.marquee span::after {
+  content: '◆';
+  color: #00ffff;
+  font-size: 8px;
+}
+
+@keyframes marquee {
+  to { transform: translateX(50%); }
+}
+
+/* ============================================
+   TECH STACK ICONS
+============================================ */
+.tech-stack {
+  position: absolute;
+  top: 100px;
+  left: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 15;
+  opacity: 0.6;
+}
+
+.tech-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tech-icon:hover {
+  transform: scale(1.15) translateX(5px);
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(0,255,255,0.5);
+  opacity: 1;
+}
+
+/* ============================================
+   STATS DISPLAY
+============================================ */
+.stats-display {
+  position: absolute;
+  bottom: 60px;
+  right: 60px;
+  display: flex;
+  gap: 30px;
+  z-index: 15;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: #00ffff;
+  text-shadow: 0 0 20px rgba(0,255,255,0.6);
+  display: block;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+/* ============================================
+   CODE EDITOR WINDOW
+============================================ */
+.code-window {
+  position: absolute;
+  bottom: 80px;
+  left: 60px;
+  width: 320px;
+  background: rgba(15,15,35,0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  z-index: 15;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.code-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.code-dot.red { background: #ff5f56; }
+.code-dot.yellow { background: #ffbd2e; }
+.code-dot.green { background: #27c93f; }
+
+.code-filename {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin-right: auto;
+}
+
+.code-body {
+  padding: 15px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #f8f8f2;
+}
+
+.code-body .kw { color: #ff79c6; }
+.code-body .fn { color: #50fa7b; }
+.code-body .str { color: #f1fa8c; }
+.code-body .num { color: #bd93f9; }
+.code-body .cm { color: #6272a4; }
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 1200px) {
+  .hero { padding: 100px 40px 60px; }
+  .hero-content { gap: 50px; }
+  .code-window, .stats-display { display: none; }
+}
+
+@media (max-width: 900px) {
+  .nav { padding: 15px 25px; }
+  .nav-links { display: none; }
+  .hero { padding: 90px 24px 60px; }
+  .hero-content { grid-template-columns: 1fr; gap: 40px; }
+  .hero-image-wrap { min-height: 380px; }
+  .hero-media { height: 380px; }
+  .float-card { font-size: 10px; padding: 10px 14px; }
+  .float-card-1, .float-card-3, .float-card-5 { right: 0; left: auto; }
+  .float-card-2 { left: 0; }
+  .side-nav { display: none; }
+  .hero-counter { bottom: 15px; left: 15px; padding: 10px 20px; font-size: 11px; }
+  .tech-stack { display: none; }
+}
+
+@media (max-width: 600px) {
+  .hero-title { font-size: 36px; }
+  .hero-desc { font-size: 14px; }
+  .btn { padding: 14px 28px; font-size: 13px; }
+  .float-card-4 { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOADING SCREEN ============ -->
+<div class="loader" id="loader">
+  <div class="loader-logo">DEV STUDIO</div>
+  <div class="loader-bar">
+    <div class="loader-bar-fill" id="loaderFill"></div>
+  </div>
+  <div class="loader-percent"><span id="loaderPercent">0</span>%</div>
+</div>
+
+<!-- ============ PROGRESS BAR ============ -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ============ NAVIGATION ============ -->
+<nav class="nav" id="nav">
+  <div class="nav-logo">DEV STUDIO</div>
+  <ul class="nav-links">
+    <li><a href="#h1">خانه</a></li>
+    <li><a href="#h25">پروژه‌ها</a></li>
+    <li><a href="#h50">تیم</a></li>
+    <li><a href="#h75">تماس</a></li>
+  </ul>
+</nav>
+
+<!-- ============ HERO COUNTER ============ -->
+<div class="hero-counter">
+  <div class="dot"></div>
+  <span class="num" id="currentHero">01</span> / <span>100</span>
+  <span style="opacity:0.5">|</span>
+  <span id="currentSection">CYBERPUNK</span>
+</div>
+
+<!-- ============ SIDE NAV DOTS ============ -->
+<div class="side-nav" id="sideNav"></div>
+
+<!-- ============ HEROES CONTAINER ============ -->
+<div id="heroesContainer"></div>
+
+<script>
+/* ============================================
+   HERO DATA - 100 SECTIONS
+============================================ */
+const heroData = [
+  // ===== 1-10 =====
+  { id:1, badge:"CYBERPUNK 2077", section:"CYBERPUNK", title:"آینده کدنویسی", desc:"در دنیای سایبری، هر خط کد می‌تواند یک انقلاب باشد. با جدیدترین تکنولوژی‌ها، آینده را بسازید و مرزهای ممکن را جابجا کنید.", img:"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80", video:"https://cdn.pixabay.com/video/2023/10/22/186196-877613581_large.mp4", float1:"const future", float2:"<Cyber/>", float3:"npm install", float4:"0x00FF41", float5:"deploy()" },
+  { id:2, badge:"MATRIX MODE", section:"MATRIX", title:"وارد ماتریکس شو", desc:"دنیای واقعی برنامه‌نویسی اینجاست. کدهای باینری، امنیت و هک اخلاقی را یاد بگیرید و در دنیای دیجیتال حکمرانی کنید.", img:"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/14/47193-451305909_large.mp4", float1:"0x00FF41", float2:"> sudo access", float3:"decrypt()", float4:"matrix.js", float5:"0b01001" },
+  { id:3, badge:"DEEP OCEAN", section:"OCEAN", title:"اقیانوس کد", desc:"در اعماق دانش برنامه‌نویسی غواصی کنید. از فرانت‌اند تا بک‌اند، از دیتابیس تا کلود، همه چیز اینجاست.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46869-449632604_large.mp4", float1:"async/await", float2:"deep dive()", float3:"∞ possibilities", float4:"ocean.js", float5:"calm()" },
+  { id:4, badge:"FIRE CODE", section:"FIRE", title:"کدنویسی آتشین", desc:"با اشتیاق بسازید. پروژه‌های خود را با قدرت و سرعت آتش پیاده‌سازی کنید و دنیا را تغییر دهید.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2022/12/11/143555-780803906_large.mp4", float1:"hot reload 🔥", float2:"fast build", float3:"speed++", float4:"fire.js", float5:"burn()" },
+  { id:5, badge:"ICE FROST", section:"ICE", title:"کد یخی", desc:"سرد، دقیق و حرفه‌ای. الگوریتم‌های بهینه و معماری‌های مقیاس‌پذیر بسازید که سالها بمانند.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/04/12/70862-536835226_large.mp4", float1:"-273.15°C", float2:"clean code", float3:"optimize()", float4:"ice.js", float5:"freeze()" },
+  { id:6, badge:"GOLD EDITION", section:"GOLD", title:"نسخه طلایی", desc:"بهترین‌ها اینجا جمع شده‌اند. استانداردهای جهانی برنامه‌نویسی را رعایت کنید و در سطح جهانی رقابت کنید.", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/07/30/45912-446210005_large.mp4", float1:"$ premium", float2:"gold code", float3:"top 1%", float4:"gold.js", float5:"shine()" },
+  { id:7, badge:"GALAXY", section:"GALAXY", title:"کهکشان برنامه‌نویسی", desc:"بی‌نهایت امکان در فضای کد. از هوش مصنوعی تا بلاکچین، از کوانتوم تا متاورس، همه چیز را کشف کنید.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2023/04/24/160161-821015614_large.mp4", float1:"stars.js", float2:"cosmos.app", float3:"universe()", float4:"galaxy", float5:"explore()" },
+  { id:8, badge:"RED POWER", section:"RED", title:"قدرت قرمز", desc:"با قدرت کد بزنید. پروژه‌های بزرگی که دنیا را تغییر می‌دهند بسازید و تاریخ‌ساز شوید.", img:"https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=1200&q=80", video:"https://cdn.pixabay.com/video/2022/03/22/111633-691816593_large.mp4", float1:"power = 9999", float2:"deploy()", float3:"crush bugs", float4:"red.js", float5:"power()" },
+  { id:9, badge:"EMERALD", section:"EMERALD", title:"زمرد سبز", desc:"رشد پایدار و کد سبز. برنامه‌نویسی دوستدار محیط زیست و بهینه برای آینده‌ای بهتر.", img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46870-449632633_large.mp4", float1:"green.tech", float2:"eco.js", float3:"sustain()", float4:"emerald", float5:"grow()" },
+  { id:10, badge:"SUNSET DEV", section:"SUNSET", title:"غروب توسعه‌دهنده", desc:"زیباترین لحظات برنامه‌نویسی، وقتی است که کد شما کار می‌کند و پروژه‌تان می‌درخشد.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/09/24/49680-465118108_large.mp4", float1:"sunset.dev", float2:"beautiful()", float3:"moment()", float4:"sunset", float5:"glow()" },
+
+  // ===== 11-20 =====
+  { id:11, badge:"NEON NIGHTS", section:"NEON", title:"شب‌های نئونی", desc:"در تاریکی شب کد بزنید و از درخشش نئون لذت ببرید. پروژه‌های شما در تاریکی می‌درخشند.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/08/04/83903-585601943_large.mp4", float1:"neon.glow", float2:"midnight()", float3:"bright()", float4:"neon.js", float5:"shine()" },
+  { id:12, badge:"DEEP FOREST", section:"FOREST", title:"جنگل عمیق", desc:"در اعماق جنگل تکنولوژی گم شوید و راه خود را پیدا کنید. هر درخت یک پروژه جدید است.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/07/08/43906-437202386_large.mp4", float1:"forest.js", float2:"explore()", float3:"nature", float4:"forest", float5:"deep()" },
+  { id:13, badge:"PINK NEON", section:"PINK", title:"نئون صورتی", desc:"با رنگ صورتی نئونی، رابط‌های کاربری خیره‌کننده بسازید که چشم‌ها را مسحور کنند.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2022/06/28/122042-725511705_large.mp4", float1:"#FF00FF", float2:"pink.dev", float3:"glow()", float4:"pink.js", float5:"magic()" },
+  { id:14, badge:"ORANGE BURST", section:"ORANGE", title:"انفجار نارنجی", desc:"انرژی و خلاقیت نارنجی را در کد خود جاری کنید و پروژه‌های خود را منفجر کنید!", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/09/05/48783-459099175_large.mp4", float1:"burst()", float2:"orange.js", float3:"energy", float4:"orange", float5:"boom()" },
+  { id:15, badge:"BLUE OCEAN", section:"BLUE", title:"اقیانوس آبی", desc:"عمیق، آرام و قدرتمند مثل اقیانوس آبی کد بزنید. آرامش در دل طوفان تکنولوژی.", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46871-449632661_large.mp4", float1:"ocean.js", float2:"deep.blue", float3:"calm()", float4:"blue", float5:"wave()" },
+  { id:16, badge:"PURPLE HAZE", section:"PURPLE", title:"مه بنفش", desc:"در مه بنفش خلاقیت غرق شوید و ایده‌های نو بسازید. جایی که مرزها محو می‌شوند.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/09/23/89283-612580451_large.mp4", float1:"haze.js", float2:"purple", float3:"dream()", float4:"purple", float5:"mystic()" },
+  { id:17, badge:"TEAL TECH", section:"TEAL", title:"تکنولوژی فیروزه‌ای", desc:"با رنگ فیروزه‌ای، تازگی و نوآوری را به کد خود بیاورید. آینده‌ای روشن در انتظار شماست.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/09/21/49454-462818284_large.mp4", float1:"teal.tech", float2:"fresh()", float3:"innovate", float4:"teal", float5:"clean()" },
+  { id:18, badge:"CRIMSON", section:"CRIMSON", title:"قرمز خونین", desc:"با قدرت و شدت قرمز، پروژه‌های انقلابی بسازید که جهان را متحول کنند.", img:"https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=1200&q=80", video:"https://cdn.pixabay.com/video/2022/10/29/137173-765197849_large.mp4", float1:"crimson.js", float2:"revolution()", float3:"fight()", float4:"crimson", float5:"blood()" },
+  { id:19, badge:"INDIGO DREAM", section:"INDIGO", title:"رویای نیلی", desc:"در دنیای رویایی نیلی، ایده‌های خود را واقعی کنید. جایی که رویاها به حقیقت می‌پیوندند.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/02/06/65070-510330660_large.mp4", float1:"indigo.js", float2:"dream()", float3:"create", float4:"indigo", float5:"wish()" },
+  { id:20, badge:"AMBER GLOW", section:"AMBER", title:"درخشش کهربایی", desc:"با گرمای کهربایی، کدهای خود را درخشان کنید و پروژه‌هایتان را به یادگار بگذارید.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46872-449632689_large.mp4", float1:"amber.glow", float2:"warm()", float3:"shine", float4:"amber", float5:"gold()" },
+
+  // ===== 21-30 =====
+  { id:21, badge:"MAGENTA", section:"MAGENTA", title:"ماژنتا", desc:"با رنگ ماژنتا، خلاقیت خود را به نمایش بگذارید و مرزهای طراحی را جابجا کنید.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/12/06/101321-658140001_large.mp4", float1:"magenta.js", float2:"bold()", float3:"vibrant", float4:"magenta", float5:"loud()" },
+  { id:22, badge:"AQUA", section:"AQUA", title:"آبی فیروزه‌ای", desc:"تازگی و شفافیت آبی فیروزه‌ای را در کد خود حس کنید. کدی که مثل آب زلال است.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46873-449632716_large.mp4", float1:"aqua.js", float2:"clear()", float3:"pure", float4:"aqua", float5:"fresh()" },
+  { id:23, badge:"COPPER", section:"COPPER", title:"مسی درخشان", desc:"با رنگ مسی، گرما و اصالت را به پروژه‌های خود بیاورید و کدهای ماندگار بنویسید.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46874-449632744_large.mp4", float1:"copper.js", float2:"warm()", float3:"classic", float4:"copper", float5:"solid()" },
+  { id:24, badge:"LIME GREEN", section:"LIME", title:"سبز لایمی", desc:"با انرژی سبز لایمی، سرعت و شادابی را به کد خود اضافه کنید. سریع‌تر از همیشه!", img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46875-449632772_large.mp4", float1:"lime.js", float2:"fast()", float3:"fresh", float4:"lime", float5:"zoom()" },
+  { id:25, badge:"VIOLET", section:"VIOLET", title:"بنفش بنفشه", desc:"در دنیای بنفش بنفشه، خلاقیت بی‌پایان را تجربه کنید و شاهکارهای کدنویسی بسازید.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46876-449632800_large.mp4", float1:"violet.js", float2:"deep()", float3:"royal", float4:"violet", float5:"crown()" },
+  { id:26, badge:"SKY BLUE", section:"SKY", title:"آبی آسمانی", desc:"با آبی آسمانی، آزادی و بی‌نهایتی را در کد خود جاری کنید. پرواز کنید بالاتر از ابرها!", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46877-449632828_large.mp4", float1:"sky.js", float2:"free()", float3:"infinite", float4:"sky", float5:"fly()" },
+  { id:27, badge:"YELLOW SUN", section:"YELLOW", title:"خورشید زرد", desc:"با انرژی زرد خورشید، روشنایی را به پروژه‌های خود بیاورید و همه جا را نورانی کنید.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46878-449632856_large.mp4", float1:"sun.js", float2:"bright()", float3:"energy", float4:"yellow", float5:"solar()" },
+  { id:28, badge:"CORAL", section:"CORAL", title:"مرجانی", desc:"با رنگ مرجانی، زیبایی و زندگی را به کد خود اضافه کنید. کدی که قلب‌ها را تسخیر می‌کند.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46879-449632884_large.mp4", float1:"coral.js", float2:"alive()", float3:"beauty", float4:"coral", float5:"reef()" },
+  { id:29, badge:"MINT", section:"MINT", title:"نعنایی", desc:"با رنگ نعنایی، تازگی و خنکی را در کد خود حس کنید. نفس تازه‌ای در برنامه‌نویسی!", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46880-449632912_large.mp4", float1:"mint.js", float2:"cool()", float3:"fresh", float4:"mint", float5:"chill()" },
+  { id:30, badge:"ROSE", section:"ROSE", title:"گلی", desc:"با رنگ گلی، لطافت و زیبایی را به پروژه‌های خود بیاورید. کدی به زیبایی گل رز.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46881-449632940_large.mp4", float1:"rose.js", float2:"soft()", float3:"elegant", float4:"rose", float5:"bloom()" },
+
+  // ===== 31-40 =====
+  { id:31, badge:"INDIGO", section:"INDIGO-2", title:"نیلی عمیق", desc:"در عمق نیلی، دانش و خرد برنامه‌نویسی را کشف کنید. سفری به اعماق تکنولوژی.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46882-449632968_large.mp4", float1:"indigo.js", float2:"wisdom()", float3:"deep", float4:"indigo", float5:"sage()" },
+  { id:32, badge:"PINK ROSE", section:"PINK-ROSE", title:"رز صورتی", desc:"با رز صورتی، زیبایی و عشق را به کد خود اضافه کنید. کدی که از قلب می‌آید.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46883-449632996_large.mp4", float1:"pink.js", float2:"love()", float3:"beauty", float4:"rose", float5:"heart()" },
+  { id:33, badge:"MINT GREEN", section:"MINT-2", title:"سبز نعنایی", desc:"با سبز نعنایی، طراوت و شادابی را در پروژه‌های خود حس کنید. زندگی در کد!", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46884-449633024_large.mp4", float1:"mint.js", float2:"fresh()", float3:"pure", float4:"mint", float5:"green()" },
+  { id:34, badge:"AMBER", section:"AMBER-2", title:"کهربایی", desc:"با کهربایی، گرما و انرژی را به کد خود بیاورید. پروژه‌های شما می‌درخشند.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46885-449633052_large.mp4", float1:"amber.js", float2:"warm()", float3:"glow", float4:"amber", float5:"fire()" },
+  { id:35, badge:"PINK CORAL", section:"CORAL-2", title:"مرجانی صورتی", desc:"با مرجانی صورتی، زیبایی و زندگی را به کد خود اضافه کنید. کدی که نفس می‌کشد.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46886-449633080_large.mp4", float1:"coral.js", float2:"life()", float3:"vibrant", float4:"coral", float5:"alive()" },
+  { id:36, badge:"BLUE SKY", section:"SKY-2", title:"آسمان آبی", desc:"با آسمان آبی، بی‌نهایتی و آزادی را در کد خود تجربه کنید. پرواز به سوی موفقیت!", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46887-449633108_large.mp4", float1:"sky.js", float2:"infinite()", float3:"free", float4:"sky", float5:"cloud()" },
+  { id:37, badge:"GOLD SUN", section:"GOLD-2", title:"خورشید طلایی", desc:"با طلایی، ارزش و درخشش را به پروژه‌های خود بیاورید. کدی به ارزش طلا.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46888-449633136_large.mp4", float1:"gold.js", float2:"shine()", float3:"value", float4:"gold", float5:"luxury()" },
+  { id:38, badge:"ORANGE CORAL", section:"CORAL-3", title:"مرجانی نارنجی", desc:"با مرجانی نارنجی، انرژی و گرما را به کد خود اضافه کنید. انفجاری از خلاقیت!", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46889-449633164_large.mp4", float1:"coral.js", float2:"energy()", float3:"warm", float4:"coral", float5:"burst()" },
+  { id:39, badge:"TEAL", section:"TEAL-2", title:"فیروزه‌ای", desc:"با فیروزه‌ای، آرامش و تازگی را در پروژه‌های خود حس کنید. کدی آرام مثل دریا.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46890-449633192_large.mp4", float1:"teal.js", float2:"calm()", float3:"fresh", float4:"teal", float5:"peace()" },
+  { id:40, badge:"PURPLE", section:"PURPLE-2", title:"بنفش", desc:"با بنفش، خلاقیت و نوآوری را به کد خود بیاورید. رنگ پادشاهان برنامه‌نویسی!", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46891-449633220_large.mp4", float1:"purple.js", float2:"create()", float3:"innovate", float4:"purple", float5:"royal()" },
+
+  // ===== 41-50 =====
+  { id:41, badge:"GREEN", section:"GREEN", title:"سبز", desc:"با سبز، رشد و زندگی را در پروژه‌های خود جاری کنید. کدی که رشد می‌کند.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46892-449633248_large.mp4", float1:"green.js", float2:"grow()", float3:"life", float4:"green", float5:"leaf()" },
+  { id:42, badge:"BLUE", section:"BLUE-2", title:"آبی", desc:"با آبی، آرامش و اعتماد را به کد خود اضافه کنید. کدی که به آن اعتماد می‌کنید.", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46893-449633276_large.mp4", float1:"blue.js", float2:"calm()", float3:"trust", float4:"blue", float5:"wave()" },
+  { id:43, badge:"AMBER-3", section:"AMBER-3", title:"کهربایی ۳", desc:"با کهربایی، گرما و انرژی را در پروژه‌های خود حس کنید. درخشش طلایی در کد.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46894-449633304_large.mp4", float1:"amber.js", float2:"warm()", float3:"glow", float4:"amber", float5:"ray()" },
+  { id:44, badge:"CYAN", section:"CYAN", title:"فیروزه‌ای", desc:"با فیروزه‌ای، تازگی و شفافیت را به کد خود بیاورید. کدی زلال مثل چشمه.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46895-449633332_large.mp4", float1:"cyan.js", float2:"clear()", float3:"pure", float4:"cyan", float5:"spring()" },
+  { id:45, badge:"PINK-2", section:"PINK-2", title:"صورتی ۲", desc:"با صورتی، لطافت و زیبایی را در پروژه‌های خود جاری کنید. کدی به لطافت گل.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46896-449633360_large.mp4", float1:"pink.js", float2:"soft()", float3:"elegant", float4:"pink", float5:"flower()" },
+  { id:46, badge:"LIME", section:"LIME-2", title:"لایمی", desc:"با لایمی، انرژی و سرعت را به کد خود اضافه کنید. سریع‌تر از نور!", img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46897-449633388_large.mp4", float1:"lime.js", float2:"fast()", float3:"fresh", float4:"lime", float5:"speed()" },
+  { id:47, badge:"VIOLET-2", section:"VIOLET-2", title:"بنفشه ۲", desc:"با بنفشه، خلاقیت و عمق را در پروژه‌های خود حس کنید. کدی عمیق مثل اقیانوس.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46898-449633416_large.mp4", float1:"violet.js", float2:"deep()", float3:"royal", float4:"violet", float5:"deep()" },
+  { id:48, badge:"ORANGE", section:"ORANGE-2", title:"نارنجی", desc:"با نارنجی، انرژی و شادی را به کد خود بیاورید. کدی پر از شور و شوق.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46899-449633444_large.mp4", float1:"orange.js", float2:"joy()", float3:"energy", float4:"orange", float5:"happy()" },
+  { id:49, badge:"SKY-2", section:"SKY-3", title:"آسمانی ۲", desc:"با آسمانی، آزادی و بی‌نهایتی را در پروژه‌های خود تجربه کنید. پرواز کنید!", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46900-449633472_large.mp4", float1:"sky.js", float2:"free()", float3:"infinite", float4:"sky", float5:"soar()" },
+  { id:50, badge:"GOLD FINAL", section:"GOLD-3", title:"طلایی نهایی", desc:"با طلایی نهایی، بهترین و ارزشمندترین پروژه‌های خود را بسازید. شاهکارتان!", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46901-449633500_large.mp4", float1:"gold.final", float2:"best()", float3:"premium", float4:"gold", float5:"master()" },
+
+  // ===== 51-60 =====
+  { id:51, badge:"JAVASCRIPT", section:"JS", title:"قدرت جاوااسکریپت", desc:"زبان برنامه‌نویسی وب، از فرانت تا بک. با JS دنیای وب را تسخیر کنید.", img:"https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46902-449633528_large.mp4", float1:"const js", float2:"async ()", float3:"await", float4:"es2024", float5:"node.js" },
+  { id:52, badge:"PYTHON", section:"PYTHON", title:"مار پایتون", desc:"قدرتمند، ساده و همه‌کاره. از AI تا دیتا ساینس، پایتون همه جا هست.", img:"https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46903-449633556_large.mp4", float1:"import py", float2:"def main()", float3:"python3", float4:"pip inst", float5:"🐍" },
+  { id:53, badge:"REACT", section:"REACT", title:"دنیای ری‌اکت", desc:"کتابخانه محبوب فرانت‌اند، ساخته شده توسط متا. کامپوننت‌محور و سریع.", img:"https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46904-449633584_large.mp4", float1:"useState", float2:"useEffect", float3:"<App/>", float4:"jsx", float5:"react" },
+  { id:54, badge:"VUE", section:"VUE", title:"ویو جی‌اس", desc:"فریمورک پیشرونده جاوااسکریپت. ساده، قدرتمند و انعطاف‌پذیر.", img:"https://images.unsplash.com/photo-1593720213428-28a5b9e94613?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46905-449633612_large.mp4", float1:"Vue.create", float2:"v-model", float3:"<template>", float4:"vue3", float5:"nuxt" },
+  { id:55, badge:"ANGULAR", section:"ANGULAR", title:"انگولار", desc:"پلتفرم توسعه ساخته شده توسط گوگل. کامل، قدرتمند و مقیاس‌پذیر.", img:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46906-449633640_large.mp4", float1:"@Component", float2:"ngOnInit", float3:"[ngModel]", float4:"rxjs", float5:"angular" },
+  { id:56, badge:"NODE.JS", section:"NODE", title:"نود جی‌اس", desc:"جاوااسکریپت در سرور. با Node بک‌اند قدرتمند بسازید.", img:"https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46907-449633668_large.mp4", float1:"require()", float2:"http.create", float3:"express", float4:"npm", float5:"node" },
+  { id:57, badge:"TYPESCRIPT", section:"TS", title:"تایپ‌اسکریپت", desc:"جاوااسکریپت با تایپ. کد ایمن‌تر، بهتر و قابل نگهداری‌تر.", img:"https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46908-449633696_large.mp4", float1:"interface", float2:"type T =", float3:"enum", float4:"tsc", float5:"strict" },
+  { id:58, badge:"RUST", section:"RUST", title:"زبان راست", desc:"سیستم‌عامل، امن و سریع. زبانی که آینده را می‌سازد.", img:"https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46909-449633724_large.mp4", float1:"fn main()", float2:"let mut", float3:"cargo", float4:"match", float5:"🦀" },
+  { id:59, badge:"GO", section:"GO", title:"زبان گو", desc:"ساخته شده توسط گوگل. ساده، سریع و همزمان.", img:"https://images.unsplash.com/photo-1555066932-e78dd8fb77bb?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46910-449633752_large.mp4", float1:"func main", float2:"go run", float3:"goroutine", float4:"channel", float5:"golang" },
+  { id:60, badge:"SWIFT", section:"SWIFT", title:"سوئیفت", desc:"زبان اپل برای iOS و macOS. سریع، ایمن و مدرن.", img:"https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46911-449633780_large.mp4", float1:"import UI", float2:"var name", float3:"func", float4:"swiftui", float5:"ios" },
+
+  // ===== 61-70 =====
+  { id:61, badge:"DOCKER", section:"DOCKER", title:"داکر", desc:"کانتینرایز کردن اپلیکیشن. یک بار بساز، همه جا اجرا کن.", img:"https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46912-449633808_large.mp4", float1:"FROM", float2:"RUN npm", float3:"EXPOSE", float4:"docker", float5:"build" },
+  { id:62, badge:"KUBERNETES", section:"K8S", title:"کوبرنتیز", desc:"ارکستراسیون کانتینرها. مدیریت در مقیاس بزرگ.", img:"https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46913-449633836_large.mp4", float1:"kubectl", float2:"pod.yaml", float3:"deploy", float4:"k8s", float5:"cluster" },
+  { id:63, badge:"AWS", section:"AWS", title:"آمازون AWS", desc:"قدرتمندترین پلتفرم ابری جهان. همه چیز به عنوان سرویس.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46914-449633864_large.mp4", float1:"ec2", float2:"s3 upload", float3:"lambda", float4:"aws cli", float5:"cloud" },
+  { id:64, badge:"AZURE", section:"AZURE", title:"مایکروسافت آژور", desc:"پلتفرم ابری مایکروسافت. یکپارچگی کامل با سرویس‌های مایکروسافت.", img:"https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46915-449633892_large.mp4", float1:"az login", float2:"func app", float3:"blob", float4:"azure", float5:"cloud" },
+  { id:65, badge:"GCP", section:"GCP", title:"گوگل کلود", desc:"پلتفرم ابری گوگل. با قدرت هوش مصنوعی و دیتا.", img:"https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46916-449633920_large.mp4", float1:"gcloud", float2:"bq query", float3:"gke", float4:"gcp", float5:"cloud" },
+  { id:66, badge:"MONGODB", section:"MONGO", title:"مونگو دی‌بی", desc:"دیتابیس NoSQL محبوب. انعطاف‌پذیر و مقیاس‌پذیر.", img:"https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46917-449633948_large.mp4", float1:"db.find()", float2:"insertOne", float3:"aggregate", float4:"mongo", float5:"nosql" },
+  { id:67, badge:"POSTGRES", section:"POSTGRES", title:"پستگرس", desc:"قدرتمندترین دیتابیس رابطه‌ای متن‌باز. امن و قابل اعتماد.", img:"https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46918-449633976_large.mp4", float1:"SELECT *", float2:"JOIN", float3:"INDEX", float4:"postgres", float5:"sql" },
+  { id:68, badge:"REDIS", section:"REDIS", title:"ردیس", desc:"کش درون‌حافظه‌ای فوق سریع. برای performance بالا.", img:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46919-449634004_large.mp4", float1:"SET key", float2:"GET key", float3:"EXPIRE", float4:"redis", float5:"cache" },
+  { id:69, badge:"GRAPHQL", section:"GQL", title:"گراف‌کیو‌ال", desc:"جایگزین مدرن REST. یک درخواست، همه داده‌ها.", img:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46920-449634032_large.mp4", float1:"query {", float2:"mutation", float3:"subscription", float4:"graphql", float5:"apollo" },
+  { id:70, badge:"REST API", section:"REST", title:"آر‌ای‌اس‌تی ای‌پی‌آی", desc:"معماری استاندارد وب سرویس. ساده و قدرتمند.", img:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46921-449634060_large.mp4", float1:"GET /api", float2:"POST /", float3:"PUT /:id", float4:"rest", float5:"http" },
+
+  // ===== 71-80 =====
+  { id:71, badge:"AI/ML", section:"AI", title:"هوش مصنوعی", desc:"آینده همین حالا. با AI و ML دنیا را متحول کنید.", img:"https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46922-449634088_large.mp4", float1:"import ai", float2:"model.fit", float3:"predict()", float4:"tensorflow", float5:"neural" },
+  { id:72, badge:"DEEP LEARNING", section:"DL", title:"یادگیری عمیق", desc:"شبکه‌های عصبی عمیق. از تصویر تا زبان، همه چیز.", img:"https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46923-449634116_large.mp4", float1:"conv2d", float2:"LSTM", float3:"transformer", float4:"pytorch", float5:"gpu" },
+  { id:73, badge:"BLOCKCHAIN", section:"BLOCKCHAIN", title:"بلاکچین", desc:"تکنولوژی غیرمتمرکز. آینده‌ای بدون واسطه.", img:"https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46924-449634144_large.mp4", float1:"blockchain", float2:"hash()", float3:"smart contract", float4:"web3", float5:"defi" },
+  { id:74, badge:"WEB3", section:"WEB3", title:"وب سه", desc:"نسل بعدی اینترنت. غیرمتمرکز و خودمختار.", img:"https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46925-449634172_large.mp4", float1:"metamask", float2:"ethers.js", float3:"wallet", float4:"web3", float5:"dapp" },
+  { id:75, badge:"CYBERSECURITY", section:"SEC", title:"امنیت سایبری", desc:"محافظت از داده‌ها و سیستم‌ها. قهرمانان دیجیتال.", img:"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46926-449634200_large.mp4", float1:"encrypt()", float2:"firewall", float3:"pentest", float4:"security", float5:"hack" },
+  { id:76, badge:"DEVOPS", section:"DEVOPS", title:"دواپس", desc:"توسعه و عملیات یکپارچه. CI/CD و خودکارسازی.", img:"https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46927-449634228_large.mp4", float1:"ci/cd", float2:"pipeline", float3:"jenkins", float4:"devops", float5:"auto" },
+  { id:77, badge:"CLOUD", section:"CLOUD", title:"رایانش ابری", desc:"زیرساخت انعطاف‌پذیر در فضای ابری. مقیاس بی‌نهایت.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46928-449634256_large.mp4", float1:"cloud", float2:"scale()", float3:"serverless", float4:"saas", float5:"iaas" },
+  { id:78, badge:"DATA SCIENCE", section:"DS", title:"علم داده", desc:"استخراج دانش از داده‌ها. تصمیم‌گیری هوشمند.", img:"https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46929-449634284_large.mp4", float1:"pandas", float2:"numpy", float3:"matplotlib", float4:"data", float5:"insight" },
+  { id:79, badge:"MOBILE", section:"MOBILE", title:"توسعه موبایل", desc:"اپلیکیشن‌های iOS و اندروید. دنیا در جیب شما.", img:"https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46930-449634312_large.mp4", float1:"react native", float2:"flutter", float3:"swift", float4:"kotlin", float5:"mobile" },
+  { id:80, badge:"GAME DEV", section:"GAME", title:"توسعه بازی", desc:"دنیاهای مجازی بسازید. بازیسازی حرفه‌ای.", img:"https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46931-449634340_large.mp4", float1:"unity", float2:"unreal", float3:"godot", float4:"game", float5:"3d" },
+
+  // ===== 81-90 =====
+  { id:81, badge:"AR/VR", section:"ARVR", title:"واقعیت افزوده", desc:"مرز بین واقعیت و مجاز. تجربه‌های جدید بسازید.", img:"https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46932-449634368_large.mp4", float1:"ar.js", float2:"webxr", float3:"three.js", float4:"vr", float5:"immersive" },
+  { id:82, badge:"IOT", section:"IOT", title:"اینترنت اشیا", desc:"اتصال همه چیز به اینترنت. دنیای هوشمند.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46933-449634396_large.mp4", float1:"mqtt", float2:"sensor", float3:"arduino", float4:"iot", float5:"smart" },
+  { id:83, badge:"ROBOTICS", section:"ROBO", title:"رباتیک", desc:"ربات‌هایی بسازید که کارها را انجام دهند. آینده اتوماسیون.", img:"https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46934-449634424_large.mp4", float1:"ros", float2:"servo", float3:"actuator", float4:"robot", float5:"auto" },
+  { id:84, badge:"QUANTUM", section:"QUANTUM", title:"رایانش کوانتومی", desc:"مرز بعدی قدرت محاسباتی. کیوبیت‌ها و درهم‌تنیدگی.", img:"https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46935-449634452_large.mp4", float1:"qubit", float2:"qiskit", float3:"entangle", float4:"quantum", float5:"superposition" },
+  { id:85, badge:"EDGE", section:"EDGE", title:"رایانش لبه‌ای", desc:"پردازش در نزدیکی منبع داده. سرعت و کارایی.", img:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46936-449634480_large.mp4", float1:"edge", float2:"latency", float3:"cdn", float4:"5g", float5:"fast" },
+  { id:86, badge:"MICROSERVICES", section:"MICRO", title:"میکروسرویس", desc:"معماری توزیع‌شده. هر سرویس مستقل و مقیاس‌پذیر.", img:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46937-449634508_large.mp4", float1:"service", float2:"api gateway", float3:"kafka", float4:"micro", float5:"scale" },
+  { id:87, badge:"SERVERLESS", section:"SERVERLESS", title:"بدون سرور", desc:"فقط کد بنویس، سرور را فراموش کن. مقیاس خودکار.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46938-449634536_large.mp4", float1:"lambda", float2:"faas", float3:"pay per use", float4:"serverless", float5:"auto" },
+  { id:88, badge:"PWA", section:"PWA", title:"اپلیکیشن وب پیشرونده", desc:"تجربه اپ بومی با وب. نصب‌شدنی و آفلاین.", img:"https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46939-449634564_large.mp4", float1:"service worker", float2:"manifest", float3:"offline", float4:"pwa", float5:"install" },
+  { id:89, badge:"JAMSTACK", section:"JAM", title:"جم‌استک", desc:"استاتیک، سریع و امن. وب‌سایت‌های فوق سریع.", img:"https://images.unsplash.com/photo-1547658719-da2b51169166?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46940-449634592_large.mp4", float1:"gatsby", float2:"next.js", float3:"hugo", float4:"jamstack", float5:"static" },
+  { id:90, badge:"WEBASSEMBLY", section:"WASM", title:"وب‌اسمبلی", desc:"سرعت نزدیک به بومی در مرورگر. زبان‌های مختلف در وب.", img:"https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46941-449634620_large.mp4", float1:"wasm", float2:"rust→wasm", float3:"c++→wasm", float4:"performance", float5:"native" },
+
+  // ===== 91-100 =====
+  { id:91, badge:"FULLSTACK", section:"FULL", title:"فول‌استک", desc:"هم فرانت، هم بک، هم دیتابیس. همه چیز را خودت بساز.", img:"https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46942-449634648_large.mp4", float1:"front + back", float2:"full stack", float3:"end to end", float4:"mern", float5:"mean" },
+  { id:92, badge:"FRONTEND", section:"FRONT", title:"فرانت‌اند", desc:"آنچه کاربر می‌بیند. زیبایی و تعامل.", img:"https://images.unsplash.com/photo-1547658719-da2b51169166?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46943-449634676_large.mp4", float1:"html css js", float2:"react", float3:"tailwind", float4:"responsive", float5:"ui/ux" },
+  { id:93, badge:"BACKEND", section:"BACK", title:"بک‌اند", desc:"قلب تپنده اپلیکیشن. منطق، داده و امنیت.", img:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46944-449634704_large.mp4", float1:"api", float2:"database", float3:"auth", float4:"server", float5:"logic" },
+  { id:94, badge:"DATABASE", section:"DB", title:"دیتابیس", desc:"ذخیره و بازیابی داده‌ها. SQL یا NoSQL؟", img:"https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46945-449634732_large.mp4", float1:"SELECT", float2:"INSERT", float3:"UPDATE", float4:"DELETE", float5:"JOIN" },
+  { id:95, badge:"UI/UX", section:"UIUX", title:"طراحی UI/UX", desc:"تجربه کاربری عالی. طراحی که کاربر را عاشق می‌کند.", img:"https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46946-449634760_large.mp4", float1:"figma", float2:"wireframe", float3:"prototype", float4:"user flow", float5:"design" },
+  { id:96, badge:"TESTING", section:"TEST", title:"تست نرم‌افزار", desc:"کیفیت را تضمین کنید. تست واحد، یکپارچه و E2E.", img:"https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46947-449634788_large.mp4", float1:"jest", float2:"cypress", float3:"unit test", float4:"e2e", float5:"coverage" },
+  { id:97, badge:"PERFORMANCE", section:"PERF", title:"بهینه‌سازی", desc:"سرعت و کارایی. هر میلی‌ثانیه اهمیت دارد.", img:"https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46948-449634816_large.mp4", float1:"lighthouse", float2:"optimize", float3:"lazy load", float4:"cache", float5:"fast" },
+  { id:98, badge:"SCALABILITY", section:"SCALE", title:"مقیاس‌پذیری", desc:"از هزار تا میلیون کاربر. سیستم‌هایی که رشد می‌کنند.", img:"https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46949-449634844_large.mp4", float1:"horizontal", float2:"vertical", float3:"sharding", float4:"load bal", float5:"scale" },
+  { id:99, badge:"OPEN SOURCE", section:"OSS", title:"متن‌باز", desc:"با هم بهتر می‌سازیم. مشارکت در پروژه‌های متن‌باز.", img:"https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46950-449634872_large.mp4", float1:"github", float2:"fork", float3:"pull request", float4:"merge", float5:"oss" },
+  { id:100, badge:"FUTURE", section:"FUTURE", title:"آینده برنامه‌نویسی", desc:"آینده را امروز بسازید. شما جزو ۱۰۰ هستید که تا اینجا آمدید! 🎉", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46951-449634900_large.mp4", float1:"future.dev", float2:"you = 🏆", float3:"100/100", float4:"congrats", float5:"🎉" }
+];
+
+/* ============================================
+   RENDER HEROES
+============================================ */
+const container = document.getElementById('heroesContainer');
+const sideNav = document.getElementById('sideNav');
+
+heroData.forEach((data, index) => {
+  const reverseClass = index % 2 === 1 ? 'reverse' : '';
+
+  const html = `
+    <section class="hero h${data.id}" id="h${data.id}" data-hero="${data.id}" data-section="${data.section}">
+      <canvas class="hero-canvas"></canvas>
+      <div class="grid-pattern"></div>
+      <div class="glow-orb orb-1"></div>
+      <div class="glow-orb orb-2"></div>
+
+      ${index % 3 === 0 ? `
+        <div class="tech-stack">
+          <div class="tech-icon">JS</div>
+          <div class="tech-icon">TS</div>
+          <div class="tech-icon">⚛</div>
+          <div class="tech-icon">⬢</div>
+          <div class="tech-icon">◈</div>
+        </div>
+      ` : ''}
+
+      ${index % 4 === 1 ? `
+        <div class="stats-display">
+          <div class="stat-item">
+            <span class="stat-value">${(index + 1) * 12}K</span>
+            <span class="stat-label">Stars</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">99.9%</span>
+            <span class="stat-label">Uptime</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">${index + 1}ms</span>
+            <span class="stat-label">Response</span>
+          </div>
+        </div>
+      ` : ''}
+
+      ${index % 5 === 2 ? `
+        <div class="code-window">
+          <div class="code-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <span class="code-filename">hero_${data.id}.js</span>
+          </div>
+          <div class="code-body">
+            <span class="kw">const</span> <span class="fn">hero</span> = {<br>
+            &nbsp;&nbsp;id: <span class="num">${data.id}</span>,<br>
+            &nbsp;&nbsp;name: <span class="str">'${data.section}'</span>,<br>
+            &nbsp;&nbsp;active: <span class="kw">true</span><br>
+            };<br>
+            <span class="cm">// ✅ Ready to deploy</span>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="hero-content ${reverseClass}">
+        <div class="hero-text">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            ${data.badge}
+          </div>
+          <h1 class="hero-title">${data.title}</h1>
+          <p class="hero-desc">${data.desc}</p>
+          <div class="hero-buttons">
+            <a href="#" class="btn btn-primary">
+              شروع کنید
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M19 12H5M12 5l-7 7 7 7"/>
+              </svg>
+            </a>
+            <a href="#" class="btn btn-outline">بیشتر بدانید</a>
+          </div>
+        </div>
+
+        <div class="hero-image-wrap">
+          <div class="hero-media-frame">
+            <span class="frame-corner tl"></span>
+            <span class="frame-corner tr"></span>
+            <span class="frame-corner bl"></span>
+            <span class="frame-corner br"></span>
+            <img class="hero-media" src="${data.img}" alt="${data.title}" loading="lazy"
+              onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80'">
+            <video class="hero-video" autoplay muted loop playsinline preload="none" poster="${data.img}">
+              <source src="${data.video}" type="video/mp4">
+            </video>
+          </div>
+          <div class="float-card float-card-1">
+            <div class="code-line"><span class="code-key">status:</span> <span class="code-val">"active"</span></div>
+          </div>
+          <div class="float-card float-card-2">
+            <div class="code-line"><span class="code-key">mode:</span> <span class="code-val">"${data.float2}"</span></div>
+          </div>
+          <div class="float-card float-card-3">
+            <div class="code-line"><span class="code-key">exec:</span> <span class="code-val">${data.float3}</span></div>
+          </div>
+          <div class="float-card float-card-4">
+            <div class="code-line"><span class="code-comment">// ${data.float4}</span></div>
+          </div>
+          <div class="float-card float-card-5">
+            <div class="code-line"><span class="code-key">v:</span> <span class="code-val">${data.float5}</span></div>
+          </div>
+        </div>
+      </div>
+
+      ${index === 0 ? `
+        <div class="scroll-indicator">
+          <div class="scroll-mouse"></div>
+          <span>SCROLL</span>
+        </div>
+      ` : ''}
+
+      ${index % 7 === 3 ? `
+        <div class="marquee-wrap">
+          <div class="marquee">
+            <span>REACT</span><span>VUE</span><span>ANGULAR</span><span>NODE.JS</span>
+            <span>PYTHON</span><span>RUST</span><span>GO</span><span>SWIFT</span>
+            <span>TYPESCRIPT</span><span>DOCKER</span><span>KUBERNETES</span>
+            <span>REACT</span><span>VUE</span><span>ANGULAR</span><span>NODE.JS</span>
+            <span>PYTHON</span><span>RUST</span><span>GO</span><span>SWIFT</span>
+          </div>
+        </div>
+      ` : ''}
+    </section>
+  `;
+
+  container.insertAdjacentHTML('beforeend', html);
+});
+
+// ساخت نقاط ناوبری کنار
+heroData.forEach((data, index) => {
+  const dot = document.createElement('div');
+  dot.className = 'side-dot';
+  dot.dataset.target = `h${data.id}`;
+  dot.title = `${data.id}. ${data.section}`;
+  dot.addEventListener('click', () => {
+    document.getElementById(`h${data.id}`).scrollIntoView({ behavior: 'smooth' });
+  });
+  sideNav.appendChild(dot);
+});
+
+/* ============================================
+   THREE.JS CANVAS PER HERO
+============================================ */
+document.querySelectorAll('.hero-canvas').forEach((canvas, idx) => {
+  const hero = canvas.closest('.hero');
+  const rect = hero.getBoundingClientRect();
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
+  camera.position.z = 5;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(rect.width, rect.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  // ذرات نقطه‌ای
+  const particlesGeo = new THREE.BufferGeometry();
+  const particleCount = 80;
+  const positions = new Float32Array(particleCount * 3);
+  const velocities = [];
+
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 20;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+    velocities.push({
+      x: (Math.random() - 0.5) * 0.01,
+      y: (Math.random() - 0.5) * 0.01,
+      z: (Math.random() - 0.5) * 0.01
+    });
+  }
+
+  particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  const getColor = () => {
+    const colors = [0x00ffff, 0xff00ff, 0x00ff41, 0xff6b00, 0xa855f7, 0xffd700];
+    return colors[idx % colors.length];
+  };
+
+  const particlesMat = new THREE.PointsMaterial({
+    color: getColor(),
+    size: 0.06,
+    transparent: true,
+    opacity: 0.8,
+    blending: THREE.AdditiveBlending
+  });
+
+  const particles = new THREE.Points(particlesGeo, particlesMat);
+  scene.add(particles);
+
+  // Wireframe Object
+  const geometry = new THREE.IcosahedronGeometry(1.4, 1);
+  const material = new THREE.MeshBasicMaterial({
+    color: getColor(),
+    wireframe: true,
+    transparent: true,
+    opacity: 0.12
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  // حلقه‌ها
+  const ringGeo = new THREE.TorusGeometry(2.2, 0.02, 8, 60);
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: getColor(),
+    transparent: true,
+    opacity: 0.25
+  });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  scene.add(ring);
+
+  const ring2 = new THREE.Mesh(
+    new THREE.TorusGeometry(2.8, 0.015, 8, 60),
+    new THREE.MeshBasicMaterial({ color: getColor(), transparent: true, opacity: 0.15 })
+  );
+  scene.add(ring2);
+
+  let mouseX = 0, mouseY = 0;
+  hero.addEventListener('mousemove', (e) => {
+    const r = hero.getBoundingClientRect();
+    mouseX = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    mouseY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+  });
+
+  let visible = false;
+  const observer = new IntersectionObserver((entries) => {
+    visible = entries[0].isIntersecting;
+  }, { threshold: 0.05 });
+  observer.observe(hero);
+
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    if (!visible) return;
+    time += 0.005;
+
+    mesh.rotation.x += 0.003;
+    mesh.rotation.y += 0.005;
+    ring.rotation.x += 0.002;
+    ring.rotation.y -= 0.003;
+    ring2.rotation.z += 0.004;
+
+    // به‌روزرسانی ذرات
+    const pos = particlesGeo.attributes.position.array;
+    for (let i = 0; i < particleCount; i++) {
+      pos[i * 3] += velocities[i].x;
+      pos[i * 3 + 1] += velocities[i].y;
+      pos[i * 3 + 2] += velocities[i].z;
+
+      if (Math.abs(pos[i * 3]) > 10) velocities[i].x *= -1;
+      if (Math.abs(pos[i * 3 + 1]) > 10) velocities[i].y *= -1;
+      if (Math.abs(pos[i * 3 + 2]) > 5) velocities[i].z *= -1;
+    }
+    particlesGeo.attributes.position.needsUpdate = true;
+
+    camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.05;
+    camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.05;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const r = hero.getBoundingClientRect();
+    camera.aspect = r.width / r.height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(r.width, r.height);
+  });
+});
+
+/* ============================================
+   ذرات DOM اضافه
+============================================ */
+document.querySelectorAll('.hero').forEach(hero => {
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 1 + Math.random() * 3;
+    p.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      background: ${['#00ffff','#ff00ff','#00ff41','#ffd700','#a855f7'][i % 5]};
+      left: ${Math.random() * 100}%;
+      bottom: -10px;
+      box-shadow: 0 0 ${size * 4}px currentColor;
+      animation: floatUp ${8 + Math.random() * 8}s linear ${Math.random() * 5}s infinite;
+    `;
+    hero.appendChild(p);
+  }
+});
+
+// استایل انیمیشن floatUp
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+  @keyframes floatUp {
+    from { transform: translateY(100vh) scale(0.5); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    to { transform: translateY(-150px) scale(1.2); opacity: 0; }
+  }
+`;
+document.head.appendChild(styleSheet);
+
+/* ============================================
+   SCROLL PROGRESS + COUNTER + SIDE NAV
+============================================ */
+const progressBar = document.getElementById('progressBar');
+const currentHeroEl = document.getElementById('currentHero');
+const currentSectionEl = document.getElementById('currentSection');
+const nav = document.getElementById('nav');
+const sideDots = document.querySelectorAll('.side-dot');
+const allHeroes = document.querySelectorAll('.hero');
+
+let ticking = false;
+
+function updateScroll() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  progressBar.style.width = progress + '%';
+
+  // Navbar
+  if (scrollTop > 100) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+
+  // Current hero index
+  const viewportMid = scrollTop + window.innerHeight / 2;
+  let currentIdx = 0;
+  allHeroes.forEach((hero, i) => {
+    const top = hero.offsetTop;
+    const bottom = top + hero.offsetHeight;
+    if (viewportMid >= top && viewportMid < bottom) {
+      currentIdx = i;
+      hero.dataset.section && (currentSectionEl.textContent = hero.dataset.section);
+    }
+  });
+
+  const heroNum = String(currentIdx + 1).padStart(2, '0');
+  currentHeroEl.textContent = heroNum;
+
+  // Side nav active
+  sideDots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentIdx);
+  });
+}
+
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      updateScroll();
+      handleParallax();
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+/* ============================================
+   PARALLAX 3D
+============================================ */
+function handleParallax() {
+  const scrollY = window.scrollY;
+  const vh = window.innerHeight;
+
+  allHeroes.forEach(hero => {
+    const rect = hero.getBoundingClientRect();
+    const center = rect.top + rect.height / 2;
+    const dist = center - vh / 2;
+    const progress = dist / vh;
+
+    const textEl = hero.querySelector('.hero-text');
+    const imgEl = hero.querySelector('.hero-image-wrap');
+    const orbs = hero.querySelectorAll('.glow-orb');
+
+    if (textEl) {
+      const rotY = progress * 12;
+      const tz = -Math.abs(progress) * 80;
+      textEl.style.transform = `perspective(2000px) rotateY(${rotY}deg) translateZ(${tz}px)`;
+    }
+    if (imgEl) {
+      const rotY = -progress * 12;
+      const tz = -Math.abs(progress) * 120;
+      imgEl.style.transform = `perspective(2000px) rotateY(${rotY}deg) translateZ(${tz}px)`;
+    }
+    orbs.forEach((orb, i) => {
+      orb.style.transform = `translateY(${progress * (30 + i * 20)}px)`;
+    });
+
+    const content = hero.querySelector('.hero-content');
+    if (content) {
+      content.style.opacity = Math.max(0, 1 - Math.abs(progress) * 0.7);
+    }
+  });
+}
+
+/* ============================================
+   MOUSE 3D EFFECT
+============================================ */
+allHeroes.forEach(hero => {
+  hero.addEventListener('mousemove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+    const frame = hero.querySelector('.hero-media-frame');
+    if (frame) {
+      frame.style.transform = `perspective(1200px) rotateY(${x * 25}deg) rotateX(${-y * 25}deg) scale(1.02)`;
+    }
+
+    const cards = hero.querySelectorAll('.float-card');
+    cards.forEach((card, i) => {
+      const depth = 20 + i * 15;
+      card.style.transform = `translate3d(${x * depth}px, ${y * depth}px, ${60 + i * 20}px) rotateY(${x * 15}deg)`;
+    });
+  });
+
+  hero.addEventListener('mouseleave', () => {
+    const frame = hero.querySelector('.hero-media-frame');
+    if (frame) frame.style.transform = '';
+    hero.querySelectorAll('.float-card').forEach(c => c.style.transform = '');
+  });
+});
+
+/* ============================================
+   LOADER
+============================================ */
+let loadProgress = 0;
+const loaderFill = document.getElementById('loaderFill');
+const loaderPercent = document.getElementById('loaderPercent');
+const loader = document.getElementById('loader');
+
+const loadInterval = setInterval(() => {
+  loadProgress += Math.random() * 12;
+  if (loadProgress >= 100) {
+    loadProgress = 100;
+    clearInterval(loadInterval);
+    setTimeout(() => {
+      loader.classList.add('hidden');
+      setTimeout(() => { loader.style.display = 'none'; }, 800);
+      updateScroll();
+      handleParallax();
+    }, 300);
+  }
+  loaderFill.style.width = loadProgress + '%';
+  loaderPercent.textContent = Math.floor(loadProgress);
+}, 100);
+
+/* ============================================
+   INITIAL
+============================================ */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    updateScroll();
+    handleParallax();
+  }, 1200);
+});
+
+/* ============================================
+   KEYBOARD NAVIGATION
+============================================ */
+document.addEventListener('keydown', (e) => {
+  const current = parseInt(currentHeroEl.textContent);
+  if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault();
+    const next = Math.min(100, current + 1);
+    document.getElementById(`h${next}`).scrollIntoView({ behavior: 'smooth' });
+  }
+  if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault();
+    const prev = Math.max(1, current - 1);
+    document.getElementById(`h${prev}`).scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+/* ============================================
+   LOG
+============================================ */
+console.log('%c🎉 100 HERO SECTIONS LOADED!', 'color: #00ffff; font-size: 20px; font-weight: bold; text-shadow: 0 0 20px #00ffff;');
+console.log('%cBuilt with ❤️ by Pro Dev Studio', 'color: #ff00ff; font-size: 14px;');
+console.log('%cTotal Heroes: 100 | Videos: 100 | Images: 100', 'color: #00ff41; font-size: 12px;');
+
+</script>
+
+</body>
+</html>
