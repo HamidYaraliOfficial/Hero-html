@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>۱۰۰ هیرو سکشن متفاوت | Volume 2 - Neon Dreams</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;700&family=Space+Grotesk:wght@300;400;600;700&family=Cinzel:wght@400;700;900&family=Audiowide&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+/* ==========================================
+   BASE RESET
+========================================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #02020a;
+  --text: #ffffff;
+  --muted: #8b8ba7;
+}
+
+html { scroll-behavior: smooth; overflow-x: hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Vazirmatn', sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #050510; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff00ff, #00ffff, #ffd700, #ff00ff);
+  border-radius: 10px;
+}
+
+/* ==========================================
+   LOADER
+========================================== */
+.loader {
+  position: fixed;
+  inset: 0;
+  background: #02020a;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+.loader.hidden { opacity: 0; visibility: hidden; }
+
+.loader-logo {
+  font-family: 'Audiowide', cursive;
+  font-size: 64px;
+  font-weight: 400;
+  background: linear-gradient(90deg, #ff00ff, #00ffff, #ffd700, #ff00ff);
+  background-size: 400% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 2.5s linear infinite;
+  margin-bottom: 50px;
+  letter-spacing: 8px;
+  filter: drop-shadow(0 0 30px rgba(255,0,255,0.5));
+}
+
+@keyframes shine {
+  to { background-position: 400% center; }
+}
+
+.loader-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 20px);
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.loader-cell {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: #ff00ff;
+  animation: cellPulse 1.5s ease-in-out infinite;
+}
+
+.loader-cell:nth-child(1) { animation-delay: 0s; background: #ff00ff; }
+.loader-cell:nth-child(2) { animation-delay: 0.1s; background: #d500f9; }
+.loader-cell:nth-child(3) { animation-delay: 0.2s; background: #aa00ff; }
+.loader-cell:nth-child(4) { animation-delay: 0.3s; background: #7c4dff; }
+.loader-cell:nth-child(5) { animation-delay: 0.4s; background: #536dfe; }
+.loader-cell:nth-child(6) { animation-delay: 0.5s; background: #00e5ff; }
+.loader-cell:nth-child(7) { animation-delay: 0.6s; background: #18ffff; }
+.loader-cell:nth-child(8) { animation-delay: 0.7s; background: #84ffff; }
+.loader-cell:nth-child(9) { animation-delay: 0.8s; background: #b2ff59; }
+
+@keyframes cellPulse {
+  0%, 100% { transform: scale(0.6); opacity: 0.4; }
+  50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 25px currentColor; }
+}
+
+.loader-bar {
+  width: 320px;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.loader-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff00ff, #00ffff);
+  box-shadow: 0 0 20px #ff00ff;
+  transition: width 0.3s ease;
+}
+.loader-percent {
+  margin-top: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #ff00ff;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+/* ==========================================
+   PROGRESS BAR
+========================================== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff00ff, #00ffff, #ffd700, #ff00ff);
+  background-size: 300% auto;
+  z-index: 9999;
+  width: 0%;
+  animation: shine 3s linear infinite;
+  box-shadow: 0 0 20px rgba(255,0,255,0.9);
+}
+
+/* ==========================================
+   TOP HUD
+========================================== */
+.top-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 14px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 9998;
+  transition: all 0.4s ease;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.top-hud.scrolled {
+  background: rgba(2,2,10,0.85);
+  backdrop-filter: blur(25px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.hud-left, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.hud-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+.hud-item .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00ff41;
+  box-shadow: 0 0 8px #00ff41;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+.hud-brand {
+  font-family: 'Audiowide', cursive;
+  font-size: 16px;
+  background: linear-gradient(90deg, #ff00ff, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 3px;
+}
+
+/* ==========================================
+   BOTTOM HUD
+========================================== */
+.bottom-hud {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(2,2,10,0.85);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255,0,255,0.25);
+  padding: 10px 24px;
+  border-radius: 50px;
+  z-index: 9997;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #ff00ff;
+  box-shadow: 0 10px 40px rgba(255,0,255,0.2);
+}
+.hud-num {
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+}
+.hud-sep {
+  opacity: 0.4;
+}
+.hud-label {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+/* ==========================================
+   SIDE TIME PANEL
+========================================== */
+.time-panel {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  z-index: 9997;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: rgba(2,2,10,0.6);
+  backdrop-filter: blur(20px);
+  padding: 20px 12px;
+  border-radius: 30px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.time-label {
+  writing-mode: vertical-rl;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.time-value {
+  writing-mode: vertical-rl;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: #00ffff;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* ==========================================
+   HERO BASE
+========================================== */
+.hero {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 90px 60px 90px;
+  perspective: 2500px;
+  transform-style: preserve-3d;
+  isolation: isolate;
+}
+
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 70px;
+  max-width: 1500px;
+  width: 100%;
+  align-items: center;
+  transform-style: preserve-3d;
+  position: relative;
+  z-index: 10;
+}
+.hero-content.reverse { direction: ltr; }
+.hero-content.reverse > * { direction: rtl; }
+
+.hero-text { transform-style: preserve-3d; will-change: transform; }
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+  text-transform: uppercase;
+  font-family: 'Orbitron', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+.hero-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: translateX(-100%);
+  animation: badgeShine 3s infinite;
+}
+@keyframes badgeShine { to { transform: translateX(100%); } }
+.hero-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+  animation: pulse 1.5s infinite;
+}
+
+.hero-title {
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: clamp(42px, 5.5vw, 82px);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 28px;
+  letter-spacing: -2px;
+}
+
+.hero-desc {
+  font-size: 17px;
+  line-height: 2;
+  opacity: 0.85;
+  margin-bottom: 40px;
+  max-width: 580px;
+  color: var(--muted);
+}
+
+.hero-buttons { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+
+.btn {
+  padding: 18px 40px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  font-family: 'Vazirmatn', sans-serif;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+.btn:hover::before { transform: translateX(100%); }
+.btn-primary { color: #000; box-shadow: 0 15px 45px rgba(255,0,255,0.4); }
+.btn-primary:hover { transform: translateY(-5px) scale(1.05); }
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+}
+.btn-outline:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.7);
+  transform: translateY(-5px);
+}
+
+/* ==========================================
+   HERO MEDIA
+========================================== */
+.hero-image-wrap {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 550px;
+}
+
+.hero-media-frame {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 60px 120px rgba(0,0,0,0.7), 0 0 60px rgba(255,0,255,0.15);
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+  z-index: 2;
+}
+
+.hero-media {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s ease;
+}
+.hero-media-frame:hover .hero-media { transform: scale(1.08); }
+
+.hero-video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 2;
+}
+.hero-media-frame:hover .hero-video { opacity: 1; }
+
+.frame-corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #ff00ff;
+  z-index: 5;
+  pointer-events: none;
+}
+.frame-corner.tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+.frame-corner.tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+.frame-corner.bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+.frame-corner.br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+/* ==========================================
+   FLOAT CARDS
+========================================== */
+.float-card {
+  position: absolute;
+  background: rgba(10,10,25,0.92);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 16px 22px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 15;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+  white-space: nowrap;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+.float-card::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff5f56;
+  box-shadow: 14px 0 0 #ffbd2e, 28px 0 0 #27c93f;
+}
+.float-card .code-line {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-key { color: #ff79c6; }
+.code-val { color: #50fa7b; }
+.code-comment { color: #6272a4; }
+
+.float-card-1 { top: 30px; right: -30px; animation: floatCard 5s ease-in-out infinite; }
+.float-card-2 { bottom: 60px; left: -40px; animation: floatCard 5s ease-in-out infinite 1.5s; }
+.float-card-3 { top: 55%; right: -50px; animation: floatCard 5s ease-in-out infinite 0.8s; }
+.float-card-4 { bottom: 20px; right: 20px; animation: floatCard 5s ease-in-out infinite 2.2s; }
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0) translateZ(60px) rotateY(-5deg); }
+  50% { transform: translateY(-18px) translateZ(80px) rotateY(5deg); }
+}
+
+/* ==========================================
+   GLOW ORBS
+========================================== */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+}
+.orb-1 { width: 600px; height: 600px; top: -150px; right: -150px; }
+.orb-2 { width: 500px; height: 500px; bottom: -150px; left: -150px; }
+
+/* ==========================================
+   THEME 1: NEON DREAMS
+========================================== */
+.n1 { background: radial-gradient(ellipse at top right, #1a0033 0%, #02020a 60%); }
+.n1 .orb-1 { background: #ff00ff; opacity: 0.35; }
+.n1 .orb-2 { background: #00ffff; opacity: 0.3; }
+.n1 .hero-badge { background: rgba(255,0,255,0.12); color: #ff00ff; border: 1px solid rgba(255,0,255,0.4); }
+.n1 .hero-title {
+  background: linear-gradient(120deg, #ff00ff, #00ffff, #ff00ff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.n1 .btn-primary { background: linear-gradient(135deg, #ff00ff, #00bfff); }
+
+/* ==========================================
+   THEME 2: HOLOGRAM
+========================================== */
+.n2 { background: #050520; }
+.n2 .orb-1 { background: #00e5ff; opacity: 0.4; }
+.n2 .orb-2 { background: #ff00ff; opacity: 0.35; }
+.n2 .hero-badge { background: rgba(0,229,255,0.15); color: #00e5ff; border: 1px solid rgba(0,229,255,0.4); }
+.n2 .hero-title {
+  background: linear-gradient(90deg, #00e5ff, #ff00ff, #00ff41, #00e5ff);
+  background-size: 400% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+}
+.n2 .btn-primary { background: linear-gradient(135deg, #00e5ff, #ff00ff); color: #fff; }
+
+/* ==========================================
+   THEME 3: SYNTHWAVE
+========================================== */
+.n3 { background: linear-gradient(180deg, #2d1b4e 0%, #0f0524 100%); }
+.n3 .orb-1 { background: #ff006e; opacity: 0.4; }
+.n3 .orb-2 { background: #fb5607; opacity: 0.4; }
+.n3 .hero-badge { background: rgba(255,0,110,0.15); color: #ff006e; border: 1px solid rgba(255,0,110,0.4); }
+.n3 .hero-title {
+  background: linear-gradient(90deg, #ff006e, #fb5607, #ffbe0b, #ff006e);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+}
+.n3 .btn-primary { background: linear-gradient(135deg, #ff006e, #fb5607); color: #fff; }
+
+/* ==========================================
+   THEME 4: AURORA
+========================================== */
+.n4 { background: radial-gradient(ellipse at bottom, #001a1a 0%, #02020a 70%); }
+.n4 .orb-1 { background: #00ffa3; opacity: 0.4; }
+.n4 .orb-2 { background: #a855f7; opacity: 0.35; }
+.n4 .hero-badge { background: rgba(0,255,163,0.15); color: #00ffa3; border: 1px solid rgba(0,255,163,0.4); }
+.n4 .hero-title {
+  background: linear-gradient(90deg, #00ffa3, #a855f7, #00ffa3);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.n4 .btn-primary { background: linear-gradient(135deg, #00ffa3, #a855f7); color: #000; }
+
+/* ==========================================
+   THEME 5: VAPORWAVE
+========================================== */
+.n5 { background: linear-gradient(180deg, #ff6ec7 0%, #7873f5 100%); }
+.n5 .orb-1 { background: #ffe74c; opacity: 0.5; }
+.n5 .orb-2 { background: #ff6ec7; opacity: 0.4; }
+.n5 .hero-badge { background: rgba(255,255,255,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n5 .hero-title { color: #fff; text-shadow: 0 4px 40px rgba(0,0,0,0.4); }
+.n5 .hero-desc { color: rgba(255,255,255,0.95); }
+.n5 .btn-primary { background: #fff; color: #7873f5; }
+
+/* ==========================================
+   THEME 6: GLITCH
+========================================== */
+.n6 { background: #000; }
+.n6 .orb-1 { background: #00ffff; opacity: 0.2; }
+.n6 .orb-2 { background: #ff0000; opacity: 0.2; }
+.n6 .hero-badge { background: rgba(0,255,255,0.1); color: #00ffff; border: 1px solid rgba(0,255,255,0.3); }
+.n6 .hero-title {
+  color: #fff;
+  text-shadow: 3px 0 #ff0000, -3px 0 #00ffff;
+  animation: glitch 3s infinite;
+}
+@keyframes glitch {
+  0%, 90%, 100% { transform: translate(0); }
+  92% { transform: translate(-3px, 1px); }
+  94% { transform: translate(3px, -1px); }
+  96% { transform: translate(-2px, -1px); }
+  98% { transform: translate(2px, 1px); }
+}
+.n6 .btn-primary { background: linear-gradient(135deg, #00ffff, #ff0000); color: #000; }
+
+/* ==========================================
+   THEME 7: SUNSET BEACH
+========================================== */
+.n7 { background: linear-gradient(180deg, #ff7e5f 0%, #feb47b 100%); }
+.n7 .orb-1 { background: #ffd700; opacity: 0.5; }
+.n7 .orb-2 { background: #ff7e5f; opacity: 0.4; }
+.n7 .hero-badge { background: rgba(255,255,255,0.3); color: #7d2a00; border: 1px solid rgba(125,42,0,0.3); }
+.n7 .hero-title { color: #7d2a00; text-shadow: 0 4px 30px rgba(255,255,255,0.5); }
+.n7 .hero-desc { color: #7d2a00; opacity: 0.85; }
+.n7 .btn-primary { background: #7d2a00; color: #fff; }
+
+/* ==========================================
+   THEME 8: MINT FRESH
+========================================== */
+.n8 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+.n8 .orb-1 { background: #a8edea; opacity: 0.6; }
+.n8 .orb-2 { background: #fed6e3; opacity: 0.5; }
+.n8 .hero-badge { background: rgba(255,255,255,0.5); color: #2c5364; border: 1px solid rgba(44,83,100,0.3); }
+.n8 .hero-title { color: #2c5364; }
+.n8 .hero-desc { color: #2c5364; opacity: 0.8; }
+.n8 .btn-primary { background: #2c5364; color: #fff; }
+
+/* ==========================================
+   THEME 9: CYBER LIME
+========================================== */
+.n9 { background: #0a0a0a; }
+.n9 .orb-1 { background: #39ff14; opacity: 0.4; }
+.n9 .orb-2 { background: #00ff88; opacity: 0.3; }
+.n9 .hero-badge { background: rgba(57,255,20,0.15); color: #39ff14; border: 1px solid rgba(57,255,20,0.4); }
+.n9 .hero-title { color: #39ff14; text-shadow: 0 0 40px rgba(57,255,20,0.6); }
+.n9 .btn-primary { background: linear-gradient(135deg, #39ff14, #00ff88); color: #000; }
+
+/* ==========================================
+   THEME 10: DEEP BLUE
+========================================== */
+.n10 { background: linear-gradient(180deg, #0a192f 0%, #000000 100%); }
+.n10 .orb-1 { background: #64ffda; opacity: 0.4; }
+.n10 .orb-2 { background: #4a90e2; opacity: 0.35; }
+.n10 .hero-badge { background: rgba(100,255,218,0.15); color: #64ffda; border: 1px solid rgba(100,255,218,0.4); }
+.n10 .hero-title {
+  background: linear-gradient(90deg, #64ffda, #4a90e2, #64ffda);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.n10 .btn-primary { background: linear-gradient(135deg, #64ffda, #4a90e2); color: #000; }
+
+/* ==========================================
+   THEME 11: NEON NIGHTCLUB
+========================================== */
+.n11 { background: radial-gradient(ellipse at center, #2a0a4a 0%, #000 70%); }
+.n11 .orb-1 { background: #ff00aa; opacity: 0.5; }
+.n11 .orb-2 { background: #00ffaa; opacity: 0.4; }
+.n11 .hero-badge { background: rgba(255,0,170,0.15); color: #ff00aa; border: 1px solid rgba(255,0,170,0.4); }
+.n11 .hero-title {
+  background: linear-gradient(90deg, #ff00aa, #00ffaa, #ff00aa);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+}
+.n11 .btn-primary { background: linear-gradient(135deg, #ff00aa, #00ffaa); color: #000; }
+
+/* ==========================================
+   THEME 12: SAKURA PINK
+========================================== */
+.n12 { background: linear-gradient(180deg, #ffdde1 0%, #ee9ca7 100%); }
+.n12 .orb-1 { background: #ff6b9d; opacity: 0.5; }
+.n12 .orb-2 { background: #c9184a; opacity: 0.3; }
+.n12 .hero-badge { background: rgba(201,24,74,0.15); color: #c9184a; border: 1px solid rgba(201,24,74,0.3); }
+.n12 .hero-title { color: #c9184a; }
+.n12 .hero-desc { color: #5c0d26; opacity: 0.85; }
+.n12 .btn-primary { background: linear-gradient(135deg, #c9184a, #ff6b9d); color: #fff; }
+
+/* ==========================================
+   THEME 13: FROZEN
+========================================== */
+.n13 { background: linear-gradient(180deg, #0a1628 0%, #2d5f8a 100%); }
+.n13 .orb-1 { background: #b3e5fc; opacity: 0.4; }
+.n13 .orb-2 { background: #0288d1; opacity: 0.35; }
+.n13 .hero-badge { background: rgba(179,229,252,0.15); color: #b3e5fc; border: 1px solid rgba(179,229,252,0.4); }
+.n13 .hero-title { color: #b3e5fc; text-shadow: 0 0 40px rgba(179,229,252,0.5); }
+.n13 .btn-primary { background: linear-gradient(135deg, #b3e5fc, #0288d1); color: #000; }
+
+/* ==========================================
+   THEME 14: MAGMA
+========================================== */
+.n14 { background: radial-gradient(ellipse at bottom, #4a0e0e 0%, #000 70%); }
+.n14 .orb-1 { background: #ff3d00; opacity: 0.5; }
+.n14 .orb-2 { background: #ffea00; opacity: 0.35; }
+.n14 .hero-badge { background: rgba(255,61,0,0.15); color: #ff3d00; border: 1px solid rgba(255,61,0,0.4); }
+.n14 .hero-title {
+  background: linear-gradient(90deg, #ff3d00, #ffea00, #ff3d00);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+}
+.n14 .btn-primary { background: linear-gradient(135deg, #ff3d00, #ffea00); color: #000; }
+
+/* ==========================================
+   THEME 15: MIDNIGHT CITY
+========================================== */
+.n15 { background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%); }
+.n15 .orb-1 { background: #fca311; opacity: 0.4; }
+.n15 .orb-2 { background: #14213d; opacity: 0.6; }
+.n15 .hero-badge { background: rgba(252,163,17,0.15); color: #fca311; border: 1px solid rgba(252,163,17,0.4); }
+.n15 .hero-title { color: #fca311; text-shadow: 0 0 40px rgba(252,163,17,0.5); }
+.n15 .btn-primary { background: linear-gradient(135deg, #fca311, #ffd60a); color: #000; }
+
+/* ==========================================
+   THEME 16: NEON TOKYO
+========================================== */
+.n16 { background: #0a0018; }
+.n16 .orb-1 { background: #ff2079; opacity: 0.5; }
+.n16 .orb-2 { background: #00e5ff; opacity: 0.4; }
+.n16 .hero-badge { background: rgba(255,32,121,0.15); color: #ff2079; border: 1px solid rgba(255,32,121,0.4); }
+.n16 .hero-title {
+  background: linear-gradient(90deg, #ff2079, #00e5ff, #ff2079);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+}
+.n16 .btn-primary { background: linear-gradient(135deg, #ff2079, #00e5ff); color: #000; }
+
+/* ==========================================
+   THEME 17: EMERALD DREAM
+========================================== */
+.n17 { background: linear-gradient(135deg, #002a1a, #004d33); }
+.n17 .orb-1 { background: #00ff88; opacity: 0.4; }
+.n17 .orb-2 { background: #10b981; opacity: 0.4; }
+.n17 .hero-badge { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.4); }
+.n17 .hero-title {
+  background: linear-gradient(90deg, #00ff88, #a7f3d0, #00ff88);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.n17 .btn-primary { background: linear-gradient(135deg, #00ff88, #10b981); color: #000; }
+
+/* ==========================================
+   THEME 18: LAVENDER
+========================================== */
+.n18 { background: linear-gradient(135deg, #5b2a86 0%, #2d1050 100%); }
+.n18 .orb-1 { background: #c084fc; opacity: 0.4; }
+.n18 .orb-2 { background: #a855f7; opacity: 0.4; }
+.n18 .hero-badge { background: rgba(192,132,252,0.15); color: #c084fc; border: 1px solid rgba(192,132,252,0.4); }
+.n18 .hero-title {
+  background: linear-gradient(90deg, #c084fc, #f0abfc, #c084fc);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.n18 .btn-primary { background: linear-gradient(135deg, #c084fc, #a855f7); color: #fff; }
+
+/* ==========================================
+   THEME 19: DESERT SAND
+========================================== */
+.n19 { background: linear-gradient(180deg, #c9a961 0%, #8b6f47 100%); }
+.n19 .orb-1 { background: #ffe082; opacity: 0.5; }
+.n19 .orb-2 { background: #8b6f47; opacity: 0.4; }
+.n19 .hero-badge { background: rgba(255,255,255,0.3); color: #4a2c0d; border: 1px solid rgba(74,44,13,0.3); }
+.n19 .hero-title { color: #4a2c0d; text-shadow: 0 4px 30px rgba(255,255,255,0.5); }
+.n19 .hero-desc { color: #4a2c0d; opacity: 0.9; }
+.n19 .btn-primary { background: #4a2c0d; color: #fff; }
+
+/* ==========================================
+   THEME 20: GALAXY PURPLE
+========================================== */
+.n20 { background: radial-gradient(ellipse at top, #2d1b4e 0%, #02020a 70%); }
+.n20 .orb-1 { background: #c084fc; opacity: 0.45; }
+.n20 .orb-2 { background: #3b0764; opacity: 0.5; }
+.n20 .hero-badge { background: rgba(192,132,252,0.15); color: #c084fc; border: 1px solid rgba(192,132,252,0.4); }
+.n20 .hero-title {
+  background: linear-gradient(90deg, #c084fc, #f0abfc, #c084fc);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+.n20 .btn-primary { background: linear-gradient(135deg, #c084fc, #a855f7); color: #fff; }
+
+/* ==========================================
+   THEMES 21-100 (alternating patterns)
+========================================== */
+.n21 { background: linear-gradient(135deg, #0f0c29, #302b63); }
+.n21 .orb-1 { background: #ff6ec7; opacity: 0.4; }
+.n21 .hero-badge { background: rgba(255,110,199,0.15); color: #ff6ec7; border: 1px solid rgba(255,110,199,0.4); }
+.n21 .hero-title { color: #ff6ec7; text-shadow: 0 0 40px rgba(255,110,199,0.5); }
+.n21 .btn-primary { background: linear-gradient(135deg, #ff6ec7, #7873f5); }
+
+.n22 { background: linear-gradient(180deg, #232526, #414345); }
+.n22 .orb-1 { background: #f39c12; opacity: 0.4; }
+.n22 .hero-badge { background: rgba(243,156,18,0.15); color: #f39c12; border: 1px solid rgba(243,156,18,0.4); }
+.n22 .hero-title { color: #f39c12; text-shadow: 0 0 40px rgba(243,156,18,0.5); }
+.n22 .btn-primary { background: linear-gradient(135deg, #f39c12, #e67e22); color: #000; }
+
+.n23 { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); }
+.n23 .orb-1 { background: #fdbb2d; opacity: 0.4; }
+.n23 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n23 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.n23 .btn-primary { background: #fff; color: #b21f1f; }
+
+.n24 { background: linear-gradient(180deg, #000046, #1cb5e0); }
+.n24 .orb-1 { background: #1cb5e0; opacity: 0.5; }
+.n24 .hero-badge { background: rgba(28,181,224,0.2); color: #fff; border: 1px solid rgba(28,181,224,0.4); }
+.n24 .hero-title { color: #fff; text-shadow: 0 0 40px rgba(28,181,224,0.6); }
+.n24 .btn-primary { background: linear-gradient(135deg, #1cb5e0, #00d2ff); color: #000; }
+
+.n25 { background: linear-gradient(135deg, #42275a, #734b6d); }
+.n25 .orb-1 { background: #f5af19; opacity: 0.4; }
+.n25 .hero-badge { background: rgba(245,175,25,0.15); color: #f5af19; border: 1px solid rgba(245,175,25,0.4); }
+.n25 .hero-title { color: #f5af19; text-shadow: 0 0 40px rgba(245,175,25,0.5); }
+.n25 .btn-primary { background: linear-gradient(135deg, #f5af19, #f12711); }
+
+.n26 { background: radial-gradient(ellipse at center, #1a0a2a 0%, #000 70%); }
+.n26 .orb-1 { background: #ff00ff; opacity: 0.5; }
+.n26 .hero-badge { background: rgba(255,0,255,0.15); color: #ff00ff; border: 1px solid rgba(255,0,255,0.4); }
+.n26 .hero-title { color: #ff00ff; text-shadow: 0 0 40px rgba(255,0,255,0.6); }
+.n26 .btn-primary { background: linear-gradient(135deg, #ff00ff, #d400ff); }
+
+.n27 { background: linear-gradient(135deg, #114357, #f29492); }
+.n27 .orb-1 { background: #f29492; opacity: 0.5; }
+.n27 .hero-badge { background: rgba(242,148,146,0.2); color: #fff; border: 1px solid rgba(242,148,146,0.4); }
+.n27 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.n27 .btn-primary { background: #f29492; color: #114357; }
+
+.n28 { background: linear-gradient(180deg, #0b8793, #360033); }
+.n28 .orb-1 { background: #0b8793; opacity: 0.5; }
+.n28 .hero-badge { background: rgba(11,135,147,0.2); color: #0b8793; border: 1px solid rgba(11,135,147,0.5); }
+.n28 .hero-title { color: #0b8793; text-shadow: 0 0 40px rgba(11,135,147,0.6); }
+.n28 .btn-primary { background: linear-gradient(135deg, #0b8793, #360033); }
+
+.n29 { background: linear-gradient(135deg, #ff512f, #dd2476); }
+.n29 .orb-1 { background: #ffd700; opacity: 0.5; }
+.n29 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n29 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n29 .btn-primary { background: #fff; color: #dd2476; }
+
+.n30 { background: linear-gradient(180deg, #141e30, #243b55); }
+.n30 .orb-1 { background: #00d2ff; opacity: 0.4; }
+.n30 .hero-badge { background: rgba(0,210,255,0.15); color: #00d2ff; border: 1px solid rgba(0,210,255,0.4); }
+.n30 .hero-title { color: #00d2ff; text-shadow: 0 0 40px rgba(0,210,255,0.5); }
+.n30 .btn-primary { background: linear-gradient(135deg, #00d2ff, #3a7bd5); color: #000; }
+
+.n31 { background: linear-gradient(135deg, #2c3e50, #4ca1af); }
+.n31 .orb-1 { background: #4ca1af; opacity: 0.5; }
+.n31 .hero-badge { background: rgba(76,161,175,0.2); color: #4ca1af; border: 1px solid rgba(76,161,175,0.5); }
+.n31 .hero-title { color: #4ca1af; text-shadow: 0 0 40px rgba(76,161,175,0.5); }
+.n31 .btn-primary { background: linear-gradient(135deg, #4ca1af, #2c3e50); color: #fff; }
+
+.n32 { background: linear-gradient(180deg, #000000, #434343); }
+.n32 .orb-1 { background: #ffcc00; opacity: 0.4; }
+.n32 .hero-badge { background: rgba(255,204,0,0.15); color: #ffcc00; border: 1px solid rgba(255,204,0,0.4); }
+.n32 .hero-title { color: #ffcc00; text-shadow: 0 0 40px rgba(255,204,0,0.5); }
+.n32 .btn-primary { background: linear-gradient(135deg, #ffcc00, #ff9900); color: #000; }
+
+.n33 { background: linear-gradient(135deg, #870000, #190a05); }
+.n33 .orb-1 { background: #ff4b2b; opacity: 0.5; }
+.n33 .hero-badge { background: rgba(255,75,43,0.15); color: #ff4b2b; border: 1px solid rgba(255,75,43,0.4); }
+.n33 .hero-title { color: #ff4b2b; text-shadow: 0 0 40px rgba(255,75,43,0.6); }
+.n33 .btn-primary { background: linear-gradient(135deg, #ff4b2b, #ff416c); }
+
+.n34 { background: linear-gradient(180deg, #4776e6, #8e54e9); }
+.n34 .orb-1 { background: #8e54e9; opacity: 0.4; }
+.n34 .hero-badge { background: rgba(142,84,233,0.2); color: #fff; border: 1px solid rgba(142,84,233,0.4); }
+.n34 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n34 .btn-primary { background: linear-gradient(135deg, #4776e6, #8e54e9); color: #fff; }
+
+.n35 { background: linear-gradient(135deg, #00b09b, #96c93d); }
+.n35 .orb-1 { background: #96c93d; opacity: 0.5; }
+.n35 .hero-badge { background: rgba(150,201,61,0.2); color: #fff; border: 1px solid rgba(150,201,61,0.4); }
+.n35 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.3); }
+.n35 .btn-primary { background: linear-gradient(135deg, #00b09b, #96c93d); color: #fff; }
+
+.n36 { background: linear-gradient(180deg, #ff6a00, #ee0979); }
+.n36 .orb-1 { background: #ee0979; opacity: 0.5; }
+.n36 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n36 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n36 .btn-primary { background: #fff; color: #ee0979; }
+
+.n37 { background: linear-gradient(135deg, #007991, #78ffd6); }
+.n37 .orb-1 { background: #78ffd6; opacity: 0.5; }
+.n37 .hero-badge { background: rgba(0,121,145,0.2); color: #fff; border: 1px solid rgba(120,255,214,0.5); }
+.n37 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.3); }
+.n37 .btn-primary { background: #007991; color: #fff; }
+
+.n38 { background: linear-gradient(180deg, #283c86, #45a247); }
+.n38 .orb-1 { background: #45a247; opacity: 0.4; }
+.n38 .hero-badge { background: rgba(69,162,71,0.2); color: #fff; border: 1px solid rgba(69,162,71,0.4); }
+.n38 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n38 .btn-primary { background: linear-gradient(135deg, #283c86, #45a247); color: #fff; }
+
+.n39 { background: linear-gradient(135deg, #cb356b, #bd3f32); }
+.n39 .orb-1 { background: #bd3f32; opacity: 0.5; }
+.n39 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n39 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n39 .btn-primary { background: #fff; color: #cb356b; }
+
+.n40 { background: linear-gradient(180deg, #1f4037, #99f2c8); }
+.n40 .orb-1 { background: #99f2c8; opacity: 0.5; }
+.n40 .hero-badge { background: rgba(31,64,55,0.3); color: #99f2c8; border: 1px solid rgba(153,242,200,0.5); }
+.n40 .hero-title { color: #99f2c8; text-shadow: 0 0 40px rgba(153,242,200,0.5); }
+.n40 .btn-primary { background: linear-gradient(135deg, #1f4037, #99f2c8); color: #000; }
+
+.n41 { background: linear-gradient(135deg, #41295a, #2f0743); }
+.n41 .orb-1 { background: #c471ed; opacity: 0.4; }
+.n41 .hero-badge { background: rgba(196,113,237,0.15); color: #c471ed; border: 1px solid rgba(196,113,237,0.4); }
+.n41 .hero-title { color: #c471ed; text-shadow: 0 0 40px rgba(196,113,237,0.5); }
+.n41 .btn-primary { background: linear-gradient(135deg, #c471ed, #f64f59); }
+
+.n42 { background: linear-gradient(180deg, #ee9ca7, #ffdde1); }
+.n42 .orb-1 { background: #ffdde1; opacity: 0.6; }
+.n42 .hero-badge { background: rgba(255,255,255,0.5); color: #c9184a; border: 1px solid rgba(201,24,74,0.3); }
+.n42 .hero-title { color: #c9184a; }
+.n42 .hero-desc { color: #7d2a00; opacity: 0.85; }
+.n42 .btn-primary { background: #c9184a; color: #fff; }
+
+.n43 { background: linear-gradient(135deg, #141e30, #243b55); }
+.n43 .orb-1 { background: #00d2ff; opacity: 0.5; }
+.n43 .hero-badge { background: rgba(0,210,255,0.15); color: #00d2ff; border: 1px solid rgba(0,210,255,0.4); }
+.n43 .hero-title { color: #00d2ff; text-shadow: 0 0 40px rgba(0,210,255,0.6); }
+.n43 .btn-primary { background: linear-gradient(135deg, #00d2ff, #3a7bd5); color: #000; }
+
+.n44 { background: linear-gradient(180deg, #f2994a, #f2c94c); }
+.n44 .orb-1 { background: #f2c94c; opacity: 0.6; }
+.n44 .hero-badge { background: rgba(255,255,255,0.4); color: #7d2a00; border: 1px solid rgba(125,42,0,0.3); }
+.n44 .hero-title { color: #7d2a00; }
+.n44 .hero-desc { color: #5c1c00; opacity: 0.85; }
+.n44 .btn-primary { background: #7d2a00; color: #fff; }
+
+.n45 { background: linear-gradient(135deg, #200122, #6f0000); }
+.n45 .orb-1 { background: #ff0080; opacity: 0.5; }
+.n45 .hero-badge { background: rgba(255,0,128,0.15); color: #ff0080; border: 1px solid rgba(255,0,128,0.4); }
+.n45 .hero-title { color: #ff0080; text-shadow: 0 0 40px rgba(255,0,128,0.6); }
+.n45 .btn-primary { background: linear-gradient(135deg, #ff0080, #ff8c00); }
+
+.n46 { background: linear-gradient(180deg, #085078, #85d8ce); }
+.n46 .orb-1 { background: #85d8ce; opacity: 0.5; }
+.n46 .hero-badge { background: rgba(133,216,206,0.2); color: #fff; border: 1px solid rgba(133,216,206,0.4); }
+.n46 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n46 .btn-primary { background: linear-gradient(135deg, #085078, #85d8ce); color: #fff; }
+
+.n47 { background: linear-gradient(135deg, #bd3f32, #cb356b); }
+.n47 .orb-1 { background: #cb356b; opacity: 0.5; }
+.n47 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n47 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n47 .btn-primary { background: #fff; color: #bd3f32; }
+
+.n48 { background: linear-gradient(180deg, #00223e, #ffa17f); }
+.n48 .orb-1 { background: #ffa17f; opacity: 0.5; }
+.n48 .hero-badge { background: rgba(255,161,127,0.2); color: #fff; border: 1px solid rgba(255,161,127,0.4); }
+.n48 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n48 .btn-primary { background: #ffa17f; color: #00223e; }
+
+.n49 { background: linear-gradient(135deg, #834d9b, #d04ed6); }
+.n49 .orb-1 { background: #d04ed6; opacity: 0.5; }
+.n49 .hero-badge { background: rgba(208,78,214,0.2); color: #fff; border: 1px solid rgba(208,78,214,0.4); }
+.n49 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n49 .btn-primary { background: linear-gradient(135deg, #834d9b, #d04ed6); color: #fff; }
+
+.n50 { background: linear-gradient(180deg, #134e5e, #71b280); }
+.n50 .orb-1 { background: #71b280; opacity: 0.5; }
+.n50 .hero-badge { background: rgba(113,178,128,0.2); color: #fff; border: 1px solid rgba(113,178,128,0.4); }
+.n50 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n50 .btn-primary { background: linear-gradient(135deg, #134e5e, #71b280); color: #fff; }
+
+/* Generating more patterns programmatically via CSS variables per hero */
+.n51 { background: radial-gradient(ellipse at top right, #1a0b2e 0%, #02020a 70%); }
+.n51 .orb-1 { background: #ff006e; opacity: 0.45; }
+.n51 .hero-badge { background: rgba(255,0,110,0.15); color: #ff006e; border: 1px solid rgba(255,0,110,0.4); }
+.n51 .hero-title { color: #ff006e; text-shadow: 0 0 40px rgba(255,0,110,0.6); }
+.n51 .btn-primary { background: linear-gradient(135deg, #ff006e, #fb5607); }
+
+.n52 { background: linear-gradient(180deg, #0b486b, #f56217); }
+.n52 .orb-1 { background: #f56217; opacity: 0.5; }
+.n52 .hero-badge { background: rgba(245,98,23,0.2); color: #fff; border: 1px solid rgba(245,98,23,0.4); }
+.n52 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n52 .btn-primary { background: linear-gradient(135deg, #0b486b, #f56217); color: #fff; }
+
+.n53 { background: linear-gradient(135deg, #360033, #0b8793); }
+.n53 .orb-1 { background: #0b8793; opacity: 0.5; }
+.n53 .hero-badge { background: rgba(11,135,147,0.2); color: #0b8793; border: 1px solid rgba(11,135,147,0.5); }
+.n53 .hero-title { color: #0b8793; text-shadow: 0 0 40px rgba(11,135,147,0.6); }
+.n53 .btn-primary { background: linear-gradient(135deg, #0b8793, #360033); color: #fff; }
+
+.n54 { background: linear-gradient(180deg, #fc466b, #3f5efb); }
+.n54 .orb-1 { background: #3f5efb; opacity: 0.5; }
+.n54 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n54 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n54 .btn-primary { background: #fff; color: #fc466b; }
+
+.n55 { background: linear-gradient(135deg, #2b5876, #4e4376); }
+.n55 .orb-1 { background: #4e4376; opacity: 0.5; }
+.n55 .hero-badge { background: rgba(78,67,118,0.3); color: #a78bfa; border: 1px solid rgba(167,139,250,0.4); }
+.n55 .hero-title { color: #a78bfa; text-shadow: 0 0 40px rgba(167,139,250,0.5); }
+.n55 .btn-primary { background: linear-gradient(135deg, #2b5876, #4e4376); color: #fff; }
+
+.n56 { background: linear-gradient(180deg, #f7b733, #fc4a1a); }
+.n56 .orb-1 { background: #fc4a1a; opacity: 0.5; }
+.n56 .hero-badge { background: rgba(255,255,255,0.3); color: #7d2a00; border: 1px solid rgba(125,42,0,0.3); }
+.n56 .hero-title { color: #7d2a00; }
+.n56 .btn-primary { background: #7d2a00; color: #fff; }
+
+.n57 { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+.n57 .orb-1 { background: #00d4ff; opacity: 0.5; }
+.n57 .hero-badge { background: rgba(0,212,255,0.15); color: #00d4ff; border: 1px solid rgba(0,212,255,0.4); }
+.n57 .hero-title { color: #00d4ff; text-shadow: 0 0 40px rgba(0,212,255,0.6); }
+.n57 .btn-primary { background: linear-gradient(135deg, #00d4ff, #0088ff); color: #000; }
+
+.n58 { background: linear-gradient(180deg, #ed213a, #93291e); }
+.n58 .orb-1 { background: #93291e; opacity: 0.5; }
+.n58 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n58 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.n58 .btn-primary { background: #fff; color: #ed213a; }
+
+.n59 { background: linear-gradient(135deg, #56ab2f, #a8e063); }
+.n59 .orb-1 { background: #a8e063; opacity: 0.5; }
+.n59 .hero-badge { background: rgba(255,255,255,0.4); color: #2d5f0c; border: 1px solid rgba(45,95,12,0.3); }
+.n59 .hero-title { color: #2d5f0c; }
+.n59 .btn-primary { background: #2d5f0c; color: #fff; }
+
+.n60 { background: linear-gradient(180deg, #000428, #004e92); }
+.n60 .orb-1 { background: #00b4db; opacity: 0.5; }
+.n60 .hero-badge { background: rgba(0,180,219,0.2); color: #00b4db; border: 1px solid rgba(0,180,219,0.4); }
+.n60 .hero-title { color: #00b4db; text-shadow: 0 0 40px rgba(0,180,219,0.6); }
+.n60 .btn-primary { background: linear-gradient(135deg, #00b4db, #0083b0); color: #000; }
+
+.n61 { background: linear-gradient(135deg, #ff1361, #fff800); }
+.n61 .orb-1 { background: #fff800; opacity: 0.5; }
+.n61 .hero-badge { background: rgba(255,255,255,0.3); color: #7d2a00; border: 1px solid rgba(125,42,0,0.3); }
+.n61 .hero-title { color: #7d2a00; }
+.n61 .btn-primary { background: #ff1361; color: #fff; }
+
+.n62 { background: linear-gradient(180deg, #5f2c82, #49a09d); }
+.n62 .orb-1 { background: #49a09d; opacity: 0.5; }
+.n62 .hero-badge { background: rgba(73,160,157,0.2); color: #49a09d; border: 1px solid rgba(73,160,157,0.4); }
+.n62 .hero-title { color: #49a09d; text-shadow: 0 0 40px rgba(73,160,157,0.5); }
+.n62 .btn-primary { background: linear-gradient(135deg, #49a09d, #5f2c82); color: #fff; }
+
+.n63 { background: linear-gradient(135deg, #c94b4b, #4b134f); }
+.n63 .orb-1 { background: #c94b4b; opacity: 0.5; }
+.n63 .hero-badge { background: rgba(201,75,75,0.2); color: #c94b4b; border: 1px solid rgba(201,75,75,0.4); }
+.n63 .hero-title { color: #c94b4b; text-shadow: 0 0 40px rgba(201,75,75,0.5); }
+.n63 .btn-primary { background: linear-gradient(135deg, #c94b4b, #4b134f); color: #fff; }
+
+.n64 { background: linear-gradient(180deg, #ffb75e, #ed8f03); }
+.n64 .orb-1 { background: #ed8f03; opacity: 0.5; }
+.n64 .hero-badge { background: rgba(255,255,255,0.3); color: #5c1c00; border: 1px solid rgba(92,28,0,0.3); }
+.n64 .hero-title { color: #5c1c00; }
+.n64 .btn-primary { background: #5c1c00; color: #fff; }
+
+.n65 { background: linear-gradient(135deg, #000000, #e74c3c); }
+.n65 .orb-1 { background: #e74c3c; opacity: 0.5; }
+.n65 .hero-badge { background: rgba(231,76,60,0.2); color: #e74c3c; border: 1px solid rgba(231,76,60,0.4); }
+.n65 .hero-title { color: #e74c3c; text-shadow: 0 0 40px rgba(231,76,60,0.6); }
+.n65 .btn-primary { background: linear-gradient(135deg, #e74c3c, #000000); color: #fff; }
+
+.n66 { background: linear-gradient(180deg, #ee0979, #ff6a00); }
+.n66 .orb-1 { background: #ff6a00; opacity: 0.5; }
+.n66 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n66 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n66 .btn-primary { background: #fff; color: #ee0979; }
+
+.n67 { background: linear-gradient(135deg, #396afc, #2948ff); }
+.n67 .orb-1 { background: #00d4ff; opacity: 0.5; }
+.n67 .hero-badge { background: rgba(0,212,255,0.2); color: #00d4ff; border: 1px solid rgba(0,212,255,0.4); }
+.n67 .hero-title { color: #00d4ff; text-shadow: 0 0 40px rgba(0,212,255,0.6); }
+.n67 .btn-primary { background: linear-gradient(135deg, #396afc, #00d4ff); color: #000; }
+
+.n68 { background: linear-gradient(180deg, #1d976c, #93f9b9); }
+.n68 .orb-1 { background: #93f9b9; opacity: 0.6; }
+.n68 .hero-badge { background: rgba(29,151,108,0.2); color: #1d976c; border: 1px solid rgba(29,151,108,0.4); }
+.n68 .hero-title { color: #1d976c; text-shadow: 0 0 30px rgba(29,151,108,0.4); }
+.n68 .btn-primary { background: linear-gradient(135deg, #1d976c, #93f9b9); color: #fff; }
+
+.n69 { background: linear-gradient(135deg, #ff0844, #ffb199); }
+.n69 .orb-1 { background: #ffb199; opacity: 0.5; }
+.n69 .hero-badge { background: rgba(255,255,255,0.3); color: #7d2a00; border: 1px solid rgba(125,42,0,0.3); }
+.n69 .hero-title { color: #7d2a00; }
+.n69 .btn-primary { background: #ff0844; color: #fff; }
+
+.n70 { background: linear-gradient(180deg, #4b6cb7, #182848); }
+.n70 .orb-1 { background: #4b6cb7; opacity: 0.5; }
+.n70 .hero-badge { background: rgba(75,108,183,0.2); color: #7dabff; border: 1px solid rgba(125,171,255,0.4); }
+.n70 .hero-title { color: #7dabff; text-shadow: 0 0 40px rgba(125,171,255,0.5); }
+.n70 .btn-primary { background: linear-gradient(135deg, #4b6cb7, #182848); color: #fff; }
+
+.n71 { background: linear-gradient(135deg, #00c9ff, #92fe9d); }
+.n71 .orb-1 { background: #92fe9d; opacity: 0.5; }
+.n71 .hero-badge { background: rgba(0,201,255,0.2); color: #003d4d; border: 1px solid rgba(0,61,77,0.3); }
+.n71 .hero-title { color: #003d4d; }
+.n71 .btn-primary { background: #003d4d; color: #fff; }
+
+.n72 { background: linear-gradient(180deg, #f953c6, #b91d73); }
+.n72 .orb-1 { background: #b91d73; opacity: 0.5; }
+.n72 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n72 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n72 .btn-primary { background: #fff; color: #b91d73; }
+
+.n73 { background: linear-gradient(135deg, #000000, #0f9b0f); }
+.n73 .orb-1 { background: #0f9b0f; opacity: 0.5; }
+.n73 .hero-badge { background: rgba(15,155,15,0.15); color: #0f9b0f; border: 1px solid rgba(15,155,15,0.4); }
+.n73 .hero-title { color: #0f9b0f; text-shadow: 0 0 40px rgba(15,155,15,0.6); }
+.n73 .btn-primary { background: linear-gradient(135deg, #0f9b0f, #000000); color: #fff; }
+
+.n74 { background: linear-gradient(180deg, #3494e6, #ec6ead); }
+.n74 .orb-1 { background: #ec6ead; opacity: 0.5; }
+.n74 .hero-badge { background: rgba(255,255,255,0.3); color: #4a1b3d; border: 1px solid rgba(74,27,61,0.3); }
+.n74 .hero-title { color: #4a1b3d; }
+.n74 .btn-primary { background: #4a1b3d; color: #fff; }
+
+.n75 { background: linear-gradient(135deg, #ff9966, #ff5e62); }
+.n75 .orb-1 { background: #ff5e62; opacity: 0.5; }
+.n75 .hero-badge { background: rgba(255,255,255,0.3); color: #7d2a00; border: 1px solid rgba(125,42,0,0.3); }
+.n75 .hero-title { color: #7d2a00; }
+.n75 .btn-primary { background: #7d2a00; color: #fff; }
+
+.n76 { background: linear-gradient(180deg, #355c7d, #c06c84); }
+.n76 .orb-1 { background: #f8b195; opacity: 0.5; }
+.n76 .hero-badge { background: rgba(248,177,149,0.2); color: #f8b195; border: 1px solid rgba(248,177,149,0.4); }
+.n76 .hero-title { color: #f8b195; text-shadow: 0 0 40px rgba(248,177,149,0.5); }
+.n76 .btn-primary { background: linear-gradient(135deg, #355c7d, #f8b195); color: #fff; }
+
+.n77 { background: linear-gradient(135deg, #2c3e50, #fd746c); }
+.n77 .orb-1 { background: #fd746c; opacity: 0.5; }
+.n77 .hero-badge { background: rgba(253,116,108,0.2); color: #fd746c; border: 1px solid rgba(253,116,108,0.4); }
+.n77 .hero-title { color: #fd746c; text-shadow: 0 0 40px rgba(253,116,108,0.5); }
+.n77 .btn-primary { background: linear-gradient(135deg, #fd746c, #2c3e50); color: #fff; }
+
+.n78 { background: linear-gradient(180deg, #4776e6, #8e54e9); }
+.n78 .orb-1 { background: #8e54e9; opacity: 0.5; }
+.n78 .hero-badge { background: rgba(142,84,233,0.2); color: #fff; border: 1px solid rgba(142,84,233,0.4); }
+.n78 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n78 .btn-primary { background: linear-gradient(135deg, #4776e6, #8e54e9); color: #fff; }
+
+.n79 { background: linear-gradient(135deg, #f79d00, #64f38c); }
+.n79 .orb-1 { background: #64f38c; opacity: 0.5; }
+.n79 .hero-badge { background: rgba(255,255,255,0.3); color: #5c1c00; border: 1px solid rgba(92,28,0,0.3); }
+.n79 .hero-title { color: #5c1c00; }
+.n79 .btn-primary { background: #f79d00; color: #fff; }
+
+.n80 { background: linear-gradient(180deg, #2c3e50, #4ca1af); }
+.n80 .orb-1 { background: #4ca1af; opacity: 0.5; }
+.n80 .hero-badge { background: rgba(76,161,175,0.2); color: #4ca1af; border: 1px solid rgba(76,161,175,0.5); }
+.n80 .hero-title { color: #4ca1af; text-shadow: 0 0 40px rgba(76,161,175,0.5); }
+.n80 .btn-primary { background: linear-gradient(135deg, #4ca1af, #2c3e50); color: #fff; }
+
+.n81 { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); }
+.n81 .orb-1 { background: #fdbb2d; opacity: 0.5; }
+.n81 .hero-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n81 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.n81 .btn-primary { background: #fff; color: #b21f1f; }
+
+.n82 { background: linear-gradient(180deg, #114357, #f29492); }
+.n82 .orb-1 { background: #f29492; opacity: 0.5; }
+.n82 .hero-badge { background: rgba(242,148,146,0.2); color: #fff; border: 1px solid rgba(242,148,146,0.4); }
+.n82 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n82 .btn-primary { background: #f29492; color: #114357; }
+
+.n83 { background: linear-gradient(135deg, #000000, #53346d); }
+.n83 .orb-1 { background: #b388ff; opacity: 0.5; }
+.n83 .hero-badge { background: rgba(179,136,255,0.15); color: #b388ff; border: 1px solid rgba(179,136,255,0.4); }
+.n83 .hero-title { color: #b388ff; text-shadow: 0 0 40px rgba(179,136,255,0.6); }
+.n83 .btn-primary { background: linear-gradient(135deg, #b388ff, #53346d); color: #fff; }
+
+.n84 { background: linear-gradient(180deg, #fc4a1a, #f7b733); }
+.n84 .orb-1 { background: #f7b733; opacity: 0.5; }
+.n84 .hero-badge { background: rgba(255,255,255,0.3); color: #7d2a00; border: 1px solid rgba(125,42,0,0.3); }
+.n84 .hero-title { color: #7d2a00; }
+.n84 .btn-primary { background: #7d2a00; color: #fff; }
+
+.n85 { background: linear-gradient(135deg, #00b4db, #0083b0); }
+.n85 .orb-1 { background: #00d4ff; opacity: 0.5; }
+.n85 .hero-badge { background: rgba(0,212,255,0.2); color: #00d4ff; border: 1px solid rgba(0,212,255,0.4); }
+.n85 .hero-title { color: #00d4ff; text-shadow: 0 0 40px rgba(0,212,255,0.6); }
+.n85 .btn-primary { background: linear-gradient(135deg, #00d4ff, #0083b0); color: #000; }
+
+.n86 { background: linear-gradient(180deg, #f12711, #f5af19); }
+.n86 .orb-1 { background: #f5af19; opacity: 0.5; }
+.n86 .hero-badge { background: rgba(255,255,255,0.3); color: #5c1c00; border: 1px solid rgba(92,28,0,0.3); }
+.n86 .hero-title { color: #5c1c00; }
+.n86 .btn-primary { background: #f12711; color: #fff; }
+
+.n87 { background: linear-gradient(135deg, #667eea, #764ba2); }
+.n87 .orb-1 { background: #a78bfa; opacity: 0.5; }
+.n87 .hero-badge { background: rgba(167,139,250,0.2); color: #fff; border: 1px solid rgba(167,139,250,0.4); }
+.n87 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n87 .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+
+.n88 { background: linear-gradient(180deg, #f857a6, #ff5858); }
+.n88 .orb-1 { background: #ff5858; opacity: 0.5; }
+.n88 .hero-badge { background: rgba(255,255,255,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n88 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n88 .btn-primary { background: #fff; color: #f857a6; }
+
+.n89 { background: linear-gradient(135deg, #43cea2, #185a9d); }
+.n89 .orb-1 { background: #43cea2; opacity: 0.5; }
+.n89 .hero-badge { background: rgba(67,206,162,0.2); color: #43cea2; border: 1px solid rgba(67,206,162,0.4); }
+.n89 .hero-title { color: #43cea2; text-shadow: 0 0 40px rgba(67,206,162,0.5); }
+.n89 .btn-primary { background: linear-gradient(135deg, #43cea2, #185a9d); color: #fff; }
+
+.n90 { background: linear-gradient(180deg, #ff6e7f, #bfe9ff); }
+.n90 .orb-1 { background: #bfe9ff; opacity: 0.5; }
+.n90 .hero-badge { background: rgba(255,255,255,0.4); color: #7d2a00; border: 1px solid rgba(125,42,0,0.3); }
+.n90 .hero-title { color: #7d2a00; }
+.n90 .btn-primary { background: #ff6e7f; color: #fff; }
+
+.n91 { background: linear-gradient(135deg, #243949, #517fa4); }
+.n91 .orb-1 { background: #7dabff; opacity: 0.5; }
+.n91 .hero-badge { background: rgba(125,171,255,0.2); color: #7dabff; border: 1px solid rgba(125,171,255,0.4); }
+.n91 .hero-title { color: #7dabff; text-shadow: 0 0 40px rgba(125,171,255,0.5); }
+.n91 .btn-primary { background: linear-gradient(135deg, #243949, #517fa4); color: #fff; }
+
+.n92 { background: linear-gradient(180deg, #da22ff, #9733ee); }
+.n92 .orb-1 { background: #da22ff; opacity: 0.5; }
+.n92 .hero-badge { background: rgba(218,34,255,0.2); color: #fff; border: 1px solid rgba(218,34,255,0.4); }
+.n92 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n92 .btn-primary { background: linear-gradient(135deg, #da22ff, #9733ee); color: #fff; }
+
+.n93 { background: linear-gradient(135deg, #02aab0, #00cdac); }
+.n93 .orb-1 { background: #00cdac; opacity: 0.5; }
+.n93 .hero-badge { background: rgba(0,205,172,0.2); color: #00cdac; border: 1px solid rgba(0,205,172,0.4); }
+.n93 .hero-title { color: #00cdac; text-shadow: 0 0 40px rgba(0,205,172,0.5); }
+.n93 .btn-primary { background: linear-gradient(135deg, #02aab0, #00cdac); color: #fff; }
+
+.n94 { background: linear-gradient(180deg, #fc5c7d, #6a82fb); }
+.n94 .orb-1 { background: #6a82fb; opacity: 0.5; }
+.n94 .hero-badge { background: rgba(255,255,255,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.n94 .hero-title { color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.n94 .btn-primary { background: #fff; color: #fc5c7d; }
+
+.n95 { background: linear-gradient(135deg, #fddb92, #d1fdff); }
+.n95 .orb-1 { background: #d1fdff; opacity: 0.6; }
+.n95 .hero-badge { background: rgba(255,255,255,0.5); color: #5c1c00; border: 1px solid rgba(92,28,0,0.3); }
+.n95 .hero-title { color: #5c1c00; }
+.n95 .btn-primary { background: #5c1c00; color: #fff; }
+
+.n96 { background: linear-gradient(180deg, #e0eafc, #cfdef3); }
+.n96 .orb-1 { background: #a5b4fc; opacity: 0.5; }
+.n96 .hero-badge { background: rgba(255,255,255,0.6); color: #3730a3; border: 1px solid rgba(55,48,163,0.3); }
+.n96 .hero-title { color: #3730a3; }
+.n96 .hero-desc { color: #3730a3; opacity: 0.85; }
+.n96 .btn-primary { background: #3730a3; color: #fff; }
+
+.n97 { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+.n97 .orb-1 { background: #f7df1e; opacity: 0.4; }
+.n97 .hero-badge { background: rgba(247,223,30,0.15); color: #f7df1e; border: 1px solid rgba(247,223,30,0.4); }
+.n97 .hero-title { color: #f7df1e; text-shadow: 0 0 40px rgba(247,223,30,0.5); }
+.n97 .btn-primary { background: linear-gradient(135deg, #f7df1e, #f5a623); color: #000; }
+
+.n98 { background: linear-gradient(180deg, #00c6ff, #0072ff); }
+.n98 .orb-1 { background: #00c6ff; opacity: 0.5; }
+.n98 .hero-badge { background: rgba(0,198,255,0.2); color: #00c6ff; border: 1px solid rgba(0,198,255,0.4); }
+.n98 .hero-title { color: #00c6ff; text-shadow: 0 0 40px rgba(0,198,255,0.6); }
+.n98 .btn-primary { background: linear-gradient(135deg, #00c6ff, #0072ff); color: #fff; }
+
+.n99 { background: linear-gradient(135deg, #ee9ca7, #ffdde1); }
+.n99 .orb-1 { background: #ffdde1; opacity: 0.6; }
+.n99 .hero-badge { background: rgba(255,255,255,0.5); color: #c9184a; border: 1px solid rgba(201,24,74,0.3); }
+.n99 .hero-title { color: #c9184a; }
+.n99 .btn-primary { background: #c9184a; color: #fff; }
+
+.n100 { background: radial-gradient(ellipse at center, #2a0a4a 0%, #000 60%); }
+.n100 .orb-1 { background: #ff00ff; opacity: 0.5; }
+.n100 .orb-2 { background: #00ffff; opacity: 0.5; }
+.n100 .hero-badge { background: rgba(255,0,255,0.2); color: #ff00ff; border: 1px solid rgba(255,0,255,0.5); }
+.n100 .hero-title {
+  background: linear-gradient(90deg, #ff00ff, #00ffff, #ffd700, #ff00ff);
+  background-size: 400% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 2s linear infinite;
+}
+.n100 .btn-primary { background: linear-gradient(135deg, #ff00ff, #00ffff); color: #000; }
+
+/* ==========================================
+   MARQUEE
+========================================== */
+.marquee-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px);
+  padding: 12px 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  z-index: 15;
+}
+.marquee {
+  display: flex;
+  gap: 50px;
+  animation: marquee 30s linear infinite;
+  white-space: nowrap;
+}
+.marquee span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.marquee span::after { content: '◆'; color: #ff00ff; font-size: 8px; }
+@keyframes marquee { to { transform: translateX(50%); } }
+
+/* ==========================================
+   STATS WIDGET
+========================================== */
+.stats-widget {
+  position: absolute;
+  bottom: 80px;
+  right: 60px;
+  display: flex;
+  gap: 30px;
+  z-index: 15;
+}
+.stat-item { text-align: center; }
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: #ff00ff;
+  text-shadow: 0 0 20px rgba(255,0,255,0.6);
+  display: block;
+}
+.stat-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+/* ==========================================
+   CODE WINDOW
+========================================== */
+.code-window {
+  position: absolute;
+  bottom: 80px;
+  left: 60px;
+  width: 320px;
+  background: rgba(10,10,25,0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,0,255,0.2);
+  border-radius: 12px;
+  z-index: 15;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background: rgba(0,0,0,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-dot.red { background: #ff5f56; }
+.code-dot.yellow { background: #ffbd2e; }
+.code-dot.green { background: #27c93f; }
+.code-filename {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin-right: auto;
+}
+.code-body {
+  padding: 15px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #f8f8f2;
+}
+.code-body .kw { color: #ff79c6; }
+.code-body .fn { color: #50fa7b; }
+.code-body .str { color: #f1fa8c; }
+.code-body .num { color: #bd93f9; }
+.code-body .cm { color: #6272a4; }
+
+/* ==========================================
+   DECORATIVE ELEMENTS
+========================================== */
+.deco-hex {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(255,0,255,0.3);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  z-index: 2;
+  animation: rotateHex 20s linear infinite;
+}
+@keyframes rotateHex { to { transform: rotate(360deg); } }
+
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(0,255,255,0.2);
+  z-index: 2;
+}
+
+.deco-line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(255,0,255,0.5), transparent);
+  height: 1px;
+  z-index: 2;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero { padding: 90px 24px 60px; }
+  .hero-content { grid-template-columns: 1fr; gap: 40px; }
+  .hero-image-wrap { min-height: 380px; }
+  .hero-media { height: 380px; }
+  .float-card { font-size: 10px; padding: 10px 14px; }
+  .code-window, .stats-widget, .time-panel { display: none; }
+  .top-hud { padding: 10px 20px; }
+  .hud-item:not(:first-child) { display: none; }
+  .marquee-wrap { padding: 8px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-logo">NEON</div>
+  <div class="loader-grid">
+    <div class="loader-cell"></div><div class="loader-cell"></div><div class="loader-cell"></div>
+    <div class="loader-cell"></div><div class="loader-cell"></div><div class="loader-cell"></div>
+    <div class="loader-cell"></div><div class="loader-cell"></div><div class="loader-cell"></div>
+  </div>
+  <div class="loader-bar"><div class="loader-bar-fill" id="loaderFill"></div></div>
+  <div class="loader-percent"><span id="loaderPercent">0</span>%</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- TOP HUD -->
+<div class="top-hud" id="topHud">
+  <div class="hud-left">
+    <div class="hud-brand">NEON STUDIO</div>
+  </div>
+  <div class="hud-right">
+    <div class="hud-item"><span class="dot"></span> <span>ONLINE</span></div>
+    <div class="hud-item"><span id="clock">00:00:00</span></div>
+    <div class="hud-item"><span>VOL.02</span></div>
+  </div>
+</div>
+
+<!-- BOTTOM HUD -->
+<div class="bottom-hud">
+  <span>HERO</span>
+  <span class="hud-num" id="currentHero">001</span>
+  <span class="hud-sep">/</span>
+  <span>100</span>
+  <span class="hud-sep">●</span>
+  <span class="hud-label" id="currentSection">NEON DREAMS</span>
+</div>
+
+<!-- TIME PANEL -->
+<div class="time-panel">
+  <div class="time-label">SESSION</div>
+  <div class="time-value" id="sessionTime">00:00</div>
+</div>
+
+<!-- HEROES -->
+<div id="heroesContainer"></div>
+
+<script>
+/* ==========================================
+   100 HERO DATA - Volume 2
+========================================== */
+const heroData = [
+  // ===== 1-20 =====
+  { id:1, badge:"NEON DREAMS", section:"NEON DREAMS", title:"رویای نئونی", desc:"جایی که رنگ‌ها زنده می‌شوند و کد تبدیل به هنر می‌شود. در دنیای نئون، هر خط کد یک اثر هنری است.", img:"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80", video:"https://cdn.pixabay.com/video/2023/10/22/186196-877613581_large.mp4", float1:"dream()", float2:"neon.js", float3:"glow()", float4:"v2.0" },
+  { id:2, badge:"HOLOGRAM", section:"HOLOGRAM", title:"هولوگرافیک", desc:"آینده‌ای شفاف و درخشان. تکنولوژی هولوگرافیک، مرز بین واقعیت و تخیل را محو می‌کند.", img:"https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/14/47193-451305909_large.mp4", float1:"holo.3d", float2:"project()", float3:"display()", float4:"4K" },
+  { id:3, badge:"SYNTHWAVE", section:"SYNTHWAVE", title:"موج مصنوعی", desc:"بازگشت به دهه ۸۰ با تکنولوژی مدرن. سینث‌ویو، پلی بین گذشته و آینده.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2022/12/11/143555-780803906_large.mp4", float1:"synth()", float2:"wave.js", float3:"retro()", float4:"80s" },
+  { id:4, badge:"AURORA", section:"AURORA", title:"شفق قطبی", desc:"زیبایی شفق قطبی در کد شما. رنگ‌های طبیعی که می‌رقصند و می‌درخشند.", img:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/04/12/70862-536835226_large.mp4", float1:"aurora()", float2:"borealis", float3:"dance()", float4:"north" },
+  { id:5, badge:"VAPORWAVE", section:"VAPORWAVE", title:"موج بخار", desc:"زیبایی‌شناسی نوستالژیک و رویایی. گذشته‌ای که هرگز نبوده، آینده‌ای که خواهد آمد.", img:"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/07/30/45912-446210005_large.mp4", float1:"vapor()", float2:"wave.art", float3:"dream()", float4:"aesthetic" },
+  { id:6, badge:"GLITCH", section:"GLITCH", title:"گلیچ", desc:"خطاهایی که تبدیل به هنر می‌شوند. در دنیای دیجیتال، هر باگ یک فرصت است.", img:"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=80", video:"https://cdn.pixabay.com/video/2023/04/24/160161-821015614_large.mp4", float1:"glitch()", float2:"error", float3:"shift()", float4:"bug" },
+  { id:7, badge:"SUNSET BEACH", section:"SUNSET", title:"ساحل غروب", desc:"آرامش غروب در ساحل. کدی که مثل موج دریا آرام و پیوسته جاری است.", img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/09/24/49680-465118108_large.mp4", float1:"sunset()", float2:"beach.js", float3:"calm()", float4:"ocean" },
+  { id:8, badge:"MINT FRESH", section:"MINT", title:"نعنای تازه", desc:"تازگی و خنکی نعنا در کد شما. حس نفس تازه در دنیای برنامه‌نویسی.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46869-449632604_large.mp4", float1:"mint()", float2:"fresh.js", float3:"cool()", float4:"breeze" },
+  { id:9, badge:"CYBER LIME", section:"LIME", title:"لیموی سایبری", desc:"انرژی و سرعت لیمویی. درخشان، پرانرژی و آماده برای هر چالشی.", img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80", video:"https://cdn.pixabay.com/video/2022/03/22/111633-691816593_large.mp4", float1:"lime.js", float2:"fast()", float3:"energy", float4:"v2" },
+  { id:10, badge:"DEEP BLUE", section:"BLUE", title:"آبی عمیق", desc:"عمق آبی اقیانوس در کد شما. آرام، قدرتمند و پر از رمز و راز.", img:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46870-449632633_large.mp4", float1:"deep.blue", float2:"ocean()", float3:"calm()", float4:"wave" },
+
+  // ===== 11-20 =====
+  { id:11, badge:"NEON CLUB", section:"CLUB", title:"کلاب نئون", desc:"انرژی شبانه و رنگ‌های نئون. جایی که کد و موسیقی به هم می‌رسند.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/08/04/83903-585601943_large.mp4", float1:"club()", float2:"beat.js", float3:"glow()", float4:"night" },
+  { id:12, badge:"SAKURA", section:"SAKURA", title:"ساکورا", desc:"لطافت شکوفه‌های گیلاس در کد شما. زیبایی گذرا که در یادها می‌ماند.", img:"https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/07/08/43906-437202386_large.mp4", float1:"sakura", float2:"bloom()", float3:"petal", float4:"spring" },
+  { id:13, badge:"FROZEN", section:"FROZEN", title:"منجمد", desc:"سردی و شکوه یخ. کدی که مثل کریستال یخ، شفاف و بی‌نقص است.", img:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/04/12/70862-536835226_large.mp4", float1:"frozen()", float2:"ice.js", float3:"crystal", float4:"cold" },
+  { id:14, badge:"MAGMA", section:"MAGMA", title:"ماگما", desc:"قدرت خام و خالص آتشفشان. انفجاری از خلاقیت و انرژی در کد شما.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2022/12/11/143555-780803906_large.mp4", float1:"magma()", float2:"lava.js", float3:"burst()", float4:"fire" },
+  { id:15, badge:"MIDNIGHT", section:"MIDNIGHT", title:"نیمه شب", desc:"سکوت و تمرکز نیمه شب. جایی که بهترین ایده‌ها متولد می‌شوند.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/09/24/49680-465118108_large.mp4", float1:"midnight", float2:"focus()", float3:"silent", float4:"dark" },
+  { id:16, badge:"NEON TOKYO", section:"TOKYO", title:"توکیو نئونی", desc:"درخشش نئون‌های توکیو. جایی که سنت و مدرنیته به هم می‌رسند.", img:"https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/08/04/83903-585601943_large.mp4", float1:"tokyo()", float2:"neon.js", float3:"city", float4:"jp" },
+  { id:17, badge:"EMERALD", section:"EMERALD", title:"زمرد", desc:"درخشش سنگ زمرد. کدی ارزشمند که در طول زمان می‌درخشد.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46871-449632661_large.mp4", float1:"emerald", float2:"jewel()", float3:"shine", float4:"green" },
+  { id:18, badge:"LAVENDER", section:"LAVENDER", title:"اسطوخودوس", desc:"آرامش و لطافت رنگ بنفش. کدی که مثل بوی گل، روح را نوازش می‌دهد.", img:"https://images.unsplash.com/photo-1499002238440-d264edd596ec?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/09/23/89283-612580451_large.mp4", float1:"lavender", float2:"calm()", float3:"soft", float4:"peace" },
+  { id:19, badge:"DESERT", section:"DESERT", title:"کویر", desc:"سکوت و عظمت کویر. کدی که مثل شن‌های کویر، بی‌پایان و اسرارآمیز است.", img:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/09/05/48783-459099175_large.mp4", float1:"desert()", float2:"sand.js", float3:"vast()", float4:"sun" },
+  { id:20, badge:"GALAXY", section:"GALAXY", title:"کهکشان", desc:"بی‌نهایتی کهکشان در کد شما. سفری به اعماق فضا و زمان.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2023/04/24/160161-821015614_large.mp4", float1:"galaxy", float2:"stars.js", float3:"cosmos", float4:"space" },
+
+  // ===== 21-40 =====
+  { id:21, badge:"COSMIC", section:"COSMIC", title:"کیهانی", desc:"از کوانتوم تا کهکشان. کدی که مرزهای فیزیک را جابجا می‌کند.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2021/02/06/65070-510330660_large.mp4", float1:"cosmic()", float2:"quantum", float3:"atom()", float4:"∞" },
+  { id:22, badge:"AMBER", section:"AMBER", title:"کهربا", desc:"گرمای کهربای باستانی. کدی که مثل فسیل، ارزشمند و ماندگار است.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46872-449632689_large.mp4", float1:"amber()", float2:"warm.js", float3:"glow", float4:"gold" },
+  { id:23, badge:"OCEAN", section:"OCEAN", title:"اقیانوس", desc:"عظمت و عمق اقیانوس. سفری به ناشناخته‌های دنیای کد.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46873-449632716_large.mp4", float1:"ocean()", float2:"deep.js", float3:"wave", float4:"blue" },
+  { id:24, badge:"SUNSET 2", section:"SUNSET2", title:"غروب ۲", desc:"رنگ‌های گرم غروب. کدی که مثل آخرین پرتوهای خورشید، دلنشین است.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46874-449632744_large.mp4", float1:"sunset2", float2:"warm()", float3:"gold", float4:"glow" },
+  { id:25, badge:"AURORA 2", section:"AURORA2", title:"شفق ۲", desc:"رقص نور در آسمان شمال. کدی که رنگ‌ها در آن زنده می‌شوند.", img:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46875-449632772_large.mp4", float1:"aurora2", float2:"dance()", float3:"color", float4:"sky" },
+  { id:26, badge:"VAPOR 2", section:"VAPOR2", title:"موج بخار ۲", desc:"زیبایی نوستالژیک دهه ۸۰. کدی که خاطرات را زنده می‌کند.", img:"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46876-449632800_large.mp4", float1:"vapor2", float2:"retro()", float3:"wave", float4:"80s" },
+  { id:27, badge:"CYBER", section:"CYBER", title:"سایبری ۲", desc:"دنیای سایبری تکامل یافته. جایی که فناوری و انسان یکی می‌شوند.", img:"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46877-449632828_large.mp4", float1:"cyber2", float2:"cyborg", float3:"nano()", float4:"ai" },
+  { id:28, badge:"NEON PINK", section:"PINK2", title:"صورتی نئونی ۲", desc:"درخشش صورتی نئونی. جذاب، پرانرژی و مدرن.", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46878-449632856_large.mp4", float1:"pink2", float2:"neon.js", float3:"glow", float4:"magic" },
+  { id:29, badge:"EMERALD 2", section:"EMERALD2", title:"زمرد ۲", desc:"درخشش سبز زمرد. کدی که ارزشمند و پایدار است.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46879-449632884_large.mp4", float1:"emerald2", float2:"green()", float3:"shine", float4:"gem" },
+  { id:30, badge:"CRYSTAL", section:"CRYSTAL", title:"کریستال", desc:"شفافیت و درخشش کریستال. کدی که در آن هیچ خطایی نیست.", img:"https://images.unsplash.com/photo-1610375461246-83df859d849d?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46880-449632912_large.mp4", float1:"crystal()", float2:"clear.js", float3:"pure", float4:"shine" },
+
+  { id:31, badge:"ULTRAVIOLET", section:"UV", title:"فرابنفش", desc:"رنگ‌هایی که چشم انسان نمی‌بیند. کدی فراتر از درک معمولی.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46881-449632940_large.mp4", float1:"uv()", float2:"ultra", float3:"beyond", float4:"ray" },
+  { id:32, badge:"INFRARED", section:"IR", title:"مادون قرمز", desc:"دیدن جهان با چشم‌های متفاوت. کدی که نامرئی‌ها را آشکار می‌کند.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46882-449632968_large.mp4", float1:"infrared", float2:"heat()", float3:"see", float4:"hidden" },
+  { id:33, badge:"GAMMA", section:"GAMMA", title:"پرتو گاما", desc:"قدرت‌مندترین پرتو کیهان. کدی با بالاترین انرژی.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46883-449632996_large.mp4", float1:"gamma()", float2:"ray.js", float3:"power", float4:"burst" },
+  { id:34, badge:"X-RAY", section:"XRAY", title:"اشعه ایکس", desc:"دیدن لایه‌های پنهان. کدی که عمق هر پدیده را نشان می‌دهد.", img:"https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46884-449633024_large.mp4", float1:"xray()", float2:"see.js", float3:"deep", float4:"scan" },
+  { id:35, badge:"PLASMA", section:"PLASMA", title:"پلاسما", desc:"حالت چهارم ماده. کدی که در بالاترین درجه انرژی کار می‌کند.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46885-449633052_large.mp4", float1:"plasma()", float2:"hot.js", float3:"state4", float4:"ion" },
+  { id:36, badge:"NEBULA", section:"NEBULA", title:"سحابی", desc:"ابرهای رنگی کیهانی. جایی که ستاره‌ها متولد می‌شوند.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46886-449633080_large.mp4", float1:"nebula()", float2:"star.js", float3:"birth", float4:"cloud" },
+  { id:37, badge:"SUPERNOVA", section:"NOVA", title:"ابرنواختر", desc:"انفجار عظیم ستاره. کدی که با قدرتی بی‌نظیر می‌درخشد.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46887-449633108_large.mp4", float1:"supernova", float2:"boom()", float3:"bright", float4:"explode" },
+  { id:38, badge:"BLACK HOLE", section:"BLACKHOLE", title:"سیاه‌چاله", desc:"جاذبه‌ای که نور را می‌بلعد. کدی با قدرتی مرموز و بی‌پایان.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46888-449633136_large.mp4", float1:"blackhole", float2:"event()", float3:"gravity", float4:"void" },
+  { id:39, badge:"WORMHOLE", section:"WORMHOLE", title:"کرم‌چاله", desc:"پلی بین دو نقطه از فضا-زمان. کدی که فاصله‌ها را حذف می‌کند.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46889-449633164_large.mp4", float1:"wormhole", float2:"bridge", float3:"jump", float4:"portal" },
+  { id:40, badge:"TIME WARP", section:"TIMEWARP", title:"پیچش زمان", desc:"سفر در زمان با کد. گذشته و آینده در یک لحظه.", img:"https://images.unsplash.com/photo-1501139083538-0139583c060f?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46890-449633192_large.mp4", float1:"timewarp", float2:"past()", float3:"future", float4:"now" },
+
+  // ===== 41-60 =====
+  { id:41, badge:"PHOENIX", section:"PHOENIX", title:"ققنوس", desc:"از خاکستر برخیز. کدی که هر بار قوی‌تر از قبل باز می‌گردد.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46891-449633220_large.mp4", float1:"phoenix", float2:"rise()", float3:"burn", float4:"rebirth" },
+  { id:42, badge:"DRAGON", section:"DRAGON", title:"اژدها", desc:"قدرت و شکوه اژدها. کدی که از افسانه‌ها الهام می‌گیرد.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46892-449633248_large.mp4", float1:"dragon()", float2:"fire.js", float3:"power", float4:"legend" },
+  { id:43, badge:"UNICORN", section:"UNICORN", title:"اسب تک‌شاخ", desc:"جادو و رنگین‌کمان. کدی که فراتر از واقعیت است.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46893-449633276_large.mp4", float1:"unicorn", float2:"magic()", float3:"rainbow", float4:"dream" },
+  { id:44, badge:"GRIFFIN", section:"GRIFFIN", title:"گریفین", desc:"ترکیب شیر و عقاب. کدی که دو دنیا را یکی می‌کند.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46894-449633304_large.mp4", float1:"griffin", float2:"hybrid", float3:"power", float4:"myth" },
+  { id:45, badge:"MERMAID", section:"MERMAID", title:"پری دریایی", desc:"زیبایی و رمز اقیانوس. کدی که در اعماق پنهان است.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46895-449633332_large.mp4", float1:"mermaid", float2:"ocean()", float3:"deep", float4:"siren" },
+  { id:46, badge:"FAIRY", section:"FAIRY", title:"پری", desc:"جادو و لطافت. کدی که با کوچک‌ترین تغییرات، بزرگ‌ترین تحولات را می‌سازد.", img:"https://images.unsplash.com/photo-1499002238440-d264edd596ec?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46896-449633360_large.mp4", float1:"fairy()", float2:"magic.js", float3:"small", float4:"power" },
+  { id:47, badge:"ANGEL", section:"ANGEL", title:"فرشته", desc:"نور و پاکی. کدی که با نیت خیر ساخته می‌شود.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46897-449633388_large.mp4", float1:"angel", float2:"light()", float3:"pure", float4:"wing" },
+  { id:48, badge:"DEMON", section:"DEMON", title:"شیطان", desc:"قدرت تاریک و مرموز. کدی که از سایه‌ها متولد می‌شود.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46898-449633416_large.mp4", float1:"demon", float2:"dark()", float3:"power", float4:"shadow" },
+  { id:49, badge:"TITAN", section:"TITAN", title:"تایتان", desc:"قدرت عظیم و بی‌پایان. کدی که با عظمت ساخته می‌شود.", img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46899-449633444_large.mp4", float1:"titan()", float2:"power.js", float3:"huge", float4:"giant" },
+  { id:50, badge:"LEGEND", section:"LEGEND", title:"افسانه", desc:"داستانی که نسل‌ها تعریف می‌شود. کدی که در تاریخ می‌ماند.", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46900-449633472_large.mp4", float1:"legend", float2:"story()", float3:"forever", float4:"epic" },
+
+  { id:51, badge:"KATANA", section:"KATANA", title:"کاتانا", desc:"تیزی و دقت شمشیر سامورایی. کدی که مثل کاتانا برنده است.", img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46901-449633500_large.mp4", float1:"katana", float2:"sharp()", float3:"cut", float4:"precise" },
+  { id:52, badge:"SHOGUN", section:"SHOGUN", title:"شوگون", desc:"رهبری و قدرت. کدی که با استراتژی نوشته می‌شود.", img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46902-449633528_large.mp4", float1:"shogun", float2:"lead()", float3:"power", float4:"rule" },
+  { id:53, badge:"SAMURAI", section:"SAMURAI", title:"سامورایی", desc:"افتخار و انضباط. کدی که با اصول نوشته می‌شود.", img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46903-449633556_large.mp4", float1:"samurai", float2:"honor()", float3:"code", float4:"way" },
+  { id:54, badge:"NINJA", section:"NINJA", title:"نینجا", desc:"مخفی و مرگبار. کدی که از دید دشمن پنهان است.", img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46904-449633584_large.mp4", float1:"ninja()", float2:"stealth", float3:"shadow", float4:"fast" },
+  { id:55, badge:"RONIN", section:"RONIN", title:"رونین", desc:"سامورایی بی‌ارباب. کدی که آزاد و مستقل است.", img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46905-449633612_large.mp4", float1:"ronin()", float2:"free.js", float3:"alone", float4:"path" },
+  { id:56, badge:"SENSEI", section:"SENSEI", title:"استاد", desc:"دانش و تجربه. کدی که با آموزش و راهنمایی نوشته می‌شود.", img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46906-449633640_large.mp4", float1:"sensei", float2:"teach()", float3:"wisdom", float4:"master" },
+  { id:57, badge:"DOJO", section:"DOJO", title:"دوجو", desc:"مکان تمرین و رشد. کدی که در آن تمرین می‌کنید.", img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46907-449633668_large.mp4", float1:"dojo()", float2:"train", float3:"grow", float4:"learn" },
+  { id:58, badge:"ZEN", section:"ZEN", title:"ذن", desc:"آرامش و تمرکز کامل. کدی که در سکوت نوشته می‌شود.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46908-449633696_large.mp4", float1:"zen()", float2:"calm", float3:"focus", float4:"peace" },
+  { id:59, badge:"CHI", section:"CHI", title:"چی", desc:"انرژی درونی. کدی که با انرژی طبیعی جاری می‌شود.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46909-449633724_large.mp4", float1:"chi()", float2:"energy", float3:"flow", float4:"life" },
+  { id:60, badge:"KARMA", section:"KARMA", title:"کارما", desc:"هر عملی واکنشی دارد. کدی که با نیت پاک نوشته می‌شود.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46910-449633752_large.mp4", float1:"karma()", float2:"action", float3:"react", float4:"balance" },
+
+  // ===== 61-80 =====
+  { id:61, badge:"OASIS", section:"OASIS", title:"واحه", desc:"آب و زندگی در دل کویر. کدی که در سختی می‌درخشد.", img:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46911-449633780_large.mp4", float1:"oasis()", float2:"life.js", float3:"water", float4:"hope" },
+  { id:62, badge:"TEMPLE", section:"TEMPLE", title:"معبد", desc:"مکان مقدس و آرام. کدی که با احترام نوشته می‌شود.", img:"https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46912-449633808_large.mp4", float1:"temple", float2:"sacred", float3:"peace", float4:"holy" },
+  { id:63, badge:"PYRAMID", section:"PYRAMID", title:"هرم", desc:"رازهای مصر باستان. کدی که رازآلود و پایدار است.", img:"https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46913-449633836_large.mp4", float1:"pyramid", float2:"ancient", float3:"secret", float4:"stone" },
+  { id:64, badge:"SPHINX", section:"SPHINX", title:"ابوالهول", desc:"معما و رمز. کدی که هیچ‌کس نمی‌تواند حل کند.", img:"https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46914-449633864_large.mp4", float1:"sphinx", float2:"riddle", float3:"mystery", float4:"enigma" },
+  { id:65, badge:"PHARAOH", section:"PHARAOH", title:"فرعون", desc:"قدرت و شکوه. کدی که مثل فراعنه جاودانه است.", img:"https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46915-449633892_large.mp4", float1:"pharaoh", float2:"king()", float3:"power", float4:"eternal" },
+  { id:66, badge:"GREEK", section:"GREEK", title:"یونانی", desc:"اسطوره‌های یونان باستان. کدی که از خدایان الهام می‌گیرد.", img:"https://images.unsplash.com/photo-1555993539-1732b0258235?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46916-449633920_large.mp4", float1:"greek", float2:"myth()", float3:"olympus", float4:"hero" },
+  { id:67, badge:"ROMAN", section:"ROMAN", title:"رومی", desc:"امپراتوری روم. کدی که با نظم و انضباط ساخته می‌شود.", img:"https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46917-449633948_large.mp4", float1:"roman", float2:"empire", float3:"order", float4:"power" },
+  { id:68, badge:"VIKING", section:"VIKING", title:"وایکینگ", desc:"جنگجویان شمال. کدی که در سرما و طوفان ساخته می‌شود.", img:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46918-449633976_large.mp4", float1:"viking", float2:"warrior", float3:"cold", float4:"north" },
+  { id:69, badge:"CELTIC", section:"CELTIC", title:"سلتیک", desc:"رمز و راز سلت‌ها. کدی که در جنگل‌های باستانی پنهان است.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46919-449634004_large.mp4", float1:"celtic", float2:"knot", float3:"forest", float4:"mystic" },
+  { id:70, badge:"MAYAN", section:"MAYAN", title:"مایا", desc:"تقویم و پیشگویی. کدی که زمان را می‌فهمد.", img:"https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46920-449634032_large.mp4", float1:"mayan", float2:"calendar", float3:"time", float4:"ancient" },
+
+  { id:71, badge:"AZTEC", section:"AZTEC", title:"آزتک", desc:"تمدن پیشرفته آمریکای مرکزی. کدی که با دانش باستانی ساخته می‌شود.", img:"https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46921-449634060_large.mp4", float1:"aztec", float2:"sun()", float3:"war", float4:"temple" },
+  { id:72, badge:"INCAN", section:"INCAN", title:"اینکا", desc:"امپراتوری کوه‌های آند. کدی که در ارتفاعات ساخته می‌شود.", img:"https://images.unsplash.com/photo-1526392060635-9d6019884377?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46922-449634088_large.mp4", float1:"incan", float2:"mountain", float3:"high", float4:"stone" },
+  { id:73, badge:"MACHU", section:"MACHU", title:"ماچو پیچو", desc:"شهر گمشده اینکاها. کدی که کشف‌شدنی و شگفت‌انگیز است.", img:"https://images.unsplash.com/photo-1526392060635-9d6019884377?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46923-449634116_large.mp4", float1:"machu", float2:"lost", float3:"discover", float4:"wonder" },
+  { id:74, badge:"EASTER", section:"EASTER", title:"جزیره ایستر", desc:"مجسمه‌های مرموز. کدی که رازی را در خود پنهان دارد.", img:"https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46924-449634144_large.mp4", float1:"easter", float2:"moai", float3:"mystery", float4:"island" },
+  { id:75, badge:"ATLANTIS", section:"ATLANTIS", title:"آتلانتیس", desc:"شهر گمشده زیر آب. کدی که در اعماق پنهان است.", img:"https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46925-449634172_large.mp4", float1:"atlantis", float2:"lost", float3:"deep", float4:"myth" },
+  { id:76, badge:"EL DORADO", section:"ELDORADO", title:"ال دورادو", desc:"شهر طلایی افسانه‌ای. کدی که ارزشمند و دست‌نیافتنی است.", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46926-449634200_large.mp4", float1:"eldorado", float2:"gold()", float3:"legend", float4:"quest" },
+  { id:77, badge:"AVALON", section:"AVALON", title:"آوالون", desc:"جزیره سیب‌ها. کدی که از افسانه‌های آرتوری الهام می‌گیرد.", img:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46927-449634228_large.mp4", float1:"avalon", float2:"legend", float3:"magic", float4:"isle" },
+  { id:78, badge:"CAMELOT", section:"CAMELOT", title:"کملوت", desc:"قلعه شاه آرتور. کدی که با شرافت و شجاعت نوشته می‌شود.", img:"https://images.unsplash.com/photo-1533158307587-828f0a76ef46?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46928-449634256_large.mp4", float1:"camelot", float2:"knight", float3:"honor", float4:"sword" },
+  { id:79, badge:"EXCALIBUR", section:"EXCALIBUR", title:"اگزکالیبر", desc:"شمشیر افسانه‌ای. کدی که فقط شایستگان می‌توانند بنویسند.", img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46929-449634284_large.mp4", float1:"excalibur", float2:"sword()", float3:"power", float4:"king" },
+  { id:80, badge:"GRAIL", section:"GRAIL", title:"جام مقدس", desc:"هدف نهایی. کدی که با جستجو و تلاش به دست می‌آید.", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46930-449634312_large.mp4", float1:"grail", float2:"quest()", float3:"holy", float4:"goal" },
+
+  // ===== 81-100 =====
+  { id:81, badge:"MANDALA", section:"MANDALA", title:"ماندالا", desc:"هنر هندسی مقدس. کدی که با تقارن کامل ساخته می‌شود.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46931-449634340_large.mp4", float1:"mandala", float2:"pattern", float3:"symmetry", float4:"art" },
+  { id:82, badge:"KALEIDO", section:"KALEIDO", title:"کالیدوسکوپ", desc:"تصاویر بی‌پایان. کدی که هر بار شکل جدیدی به خود می‌گیرد.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46932-449634368_large.mp4", float1:"kaleido", float2:"scope()", float3:"infinite", float4:"color" },
+  { id:83, badge:"PRISM", section:"PRISM", title:"منشور", desc:"تجزیه نور به رنگ‌های سازنده. کدی که پیچیدگی را ساده می‌کند.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46933-449634396_large.mp4", float1:"prism", float2:"light()", float3:"spectrum", float4:"color" },
+  { id:84, badge:"ECLIPSE", section:"ECLIPSE", title:"خورشیدگرفتگی", desc:"لحظه‌ای که نور و تاریکی به هم می‌رسند. کدی که تعادل را نشان می‌دهد.", img:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46934-449634424_large.mp4", float1:"eclipse", float2:"shadow", float3:"light", float4:"balance" },
+  { id:85, badge:"SOLSTICE", section:"SOLSTICE", title:"انقلابین", desc:"بلندترین شب یا روز سال. کدی که با چرخه‌های طبیعت هماهنگ است.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46935-449634452_large.mp4", float1:"solstice", float2:"cycle()", float3:"nature", float4:"time" },
+  { id:86, badge:"EQUINOX", section:"EQUINOX", title:"اعتدالین", desc:"تعادل کامل روز و شب. کدی که در تعادل کامل است.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46936-449634480_large.mp4", float1:"equinox", float2:"balance", float3:"equal", float4:"zen" },
+  { id:87, badge:"MONSOON", section:"MONSOON", title:"مونسون", desc:"باران‌های موسمی. کدی که مثل باران، زندگی‌بخش است.", img:"https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46937-449634508_large.mp4", float1:"monsoon", float2:"rain()", float3:"life", float4:"pour" },
+  { id:88, badge:"THUNDER", section:"THUNDER", title:"رعد", desc:"قدرت و شکوه رعد. کدی که با صدای بلند اعلام می‌شود.", img:"https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46938-449634536_large.mp4", float1:"thunder", float2:"loud()", float3:"power", float4:"boom" },
+  { id:89, badge:"LIGHTNING", section:"LIGHTNING", title:"آذرخش", desc:"سرعت و انرژی آذرخش. کدی که در یک لحظه می‌درخشد.", img:"https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46939-449634564_large.mp4", float1:"lightning", float2:"fast()", float3:"flash", float4:"bolt" },
+  { id:90, badge:"STORM", section:"STORM", title:"طوفان", desc:"قدرت خام طبیعت. کدی که در بحران‌ها ساخته می‌شود.", img:"https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46940-449634592_large.mp4", float1:"storm()", float2:"chaos", float3:"power", float4:"rage" },
+
+  { id:91, badge:"HORIZON", section:"HORIZON", title:"افق", desc:"مرز بین آسمان و زمین. کدی که به آینده می‌نگرد.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46941-449634620_large.mp4", float1:"horizon", float2:"future()", float3:"view", float4:"far" },
+  { id:92, badge:"ODYSSEY", section:"ODYSSEY", title:"ادیسه", desc:"سفری حماسی. کدی که ماجراجویی و کشف است.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46942-449634648_large.mp4", float1:"odyssey", float2:"journey", float3:"epic", float4:"quest" },
+  { id:93, badge:"VOYAGE", section:"VOYAGE", title:"سفر", desc:"سفر به ناشناخته‌ها. کدی که مرزها را جابجا می‌کند.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46943-449634676_large.mp4", float1:"voyage", float2:"explore", float3:"discover", float4:"new" },
+  { id:94, badge:"DESTINY", section:"DESTINY", title:"سرنوشت", desc:"مسیری که برای شما نوشته شده. کدی که تقدیر شماست.", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46944-449634704_large.mp4", float1:"destiny", float2:"fate()", float3:"path", float4:"write" },
+  { id:95, badge:"INFINITY", section:"INFINITY", title:"بی‌نهایت", desc:"بی‌نهایتی در کد شما. سفری که هرگز تمام نمی‌شود.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46945-449634732_large.mp4", float1:"infinity", float2:"∞.js", float3:"forever", float4:"loop" },
+  { id:96, badge:"ETERNITY", section:"ETERNITY", title:"ابدیت", desc:"زمانی بی‌پایان. کدی که تا ابد می‌ماند.", img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46946-449634760_large.mp4", float1:"eternity", float2:"forever", float3:"timeless", float4:"soul" },
+  { id:97, badge:"LEGACY", section:"LEGACY", title:"میراث", desc:"آنچه بعد از شما می‌ماند. کدی که نسل‌ها به ارث می‌برند.", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46947-449634788_large.mp4", float1:"legacy", float2:"inherit", float3:"pass on", float4:"future" },
+  { id:98, badge:"EVOLUTION", section:"EVOLUTION", title:"تکامل", desc:"تغییر و رشد مداوم. کدی که هر روز بهتر می‌شود.", img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46948-449634816_large.mp4", float1:"evolve()", float2:"grow", float3:"better", float4:"v3" },
+  { id:99, badge:"REVOLUTION", section:"REVOLUTION", title:"انقلاب", desc:"تغییر بنیادین. کدی که دنیا را متحول می‌کند.", img:"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46949-449634844_large.mp4", float1:"revolution", float2:"change", float3:"world", float4:"new" },
+  { id:100, badge:"ULTIMATE", section:"ULTIMATE", title:"نهایی", desc:"شاهکار پایانی. شما موفق شدید به هیروی صدم برسید! 🏆", img:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&q=80", video:"https://cdn.pixabay.com/video/2020/08/12/46950-449634872_large.mp4", float1:"ultimate", float2:"🏆", float3:"100/100", float4:"success" }
+];
+
+/* ==========================================
+   RENDER
+========================================== */
+const container = document.getElementById('heroesContainer');
+
+heroData.forEach((data, index) => {
+  const reverseClass = index % 2 === 1 ? 'reverse' : '';
+
+  const html = `
+    <section class="hero n${data.id}" id="n${data.id}" data-hero="${data.id}" data-section="${data.section}">
+      <canvas class="hero-canvas"></canvas>
+      <div class="glow-orb orb-1"></div>
+      <div class="glow-orb orb-2"></div>
+
+      ${index % 4 === 0 ? `<div class="deco-hex" style="top: 15%; right: 8%;"></div>` : ''}
+      ${index % 4 === 1 ? `<div class="deco-circle" style="width: 200px; height: 200px; top: 10%; left: 5%;"></div>` : ''}
+      ${index % 4 === 2 ? `<div class="deco-line" style="width: 100%; top: 30%;"></div>` : ''}
+      ${index % 4 === 3 ? `<div class="deco-hex" style="bottom: 20%; left: 10%; width: 40px; height: 40px;"></div>` : ''}
+
+      ${index % 4 === 1 ? `
+        <div class="stats-widget">
+          <div class="stat-item">
+            <span class="stat-value">${(index + 1) * 7}K</span>
+            <span class="stat-label">Stars</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">${(index % 3 + 9)}.${index % 10}%</span>
+            <span class="stat-label">Perf</span>
+          </div>
+        </div>
+      ` : ''}
+
+      ${index % 5 === 2 ? `
+        <div class="code-window">
+          <div class="code-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <span class="code-filename">neon_${data.id}.js</span>
+          </div>
+          <div class="code-body">
+            <span class="kw">const</span> <span class="fn">vol2</span> = {<br>
+            &nbsp;&nbsp;id: <span class="num">${data.id}</span>,<br>
+            &nbsp;&nbsp;theme: <span class="str">'${data.section}'</span>,<br>
+            &nbsp;&nbsp;active: <span class="kw">true</span><br>
+            };<br>
+            <span class="cm">// 🎨 Volume 2</span>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="hero-content ${reverseClass}">
+        <div class="hero-text">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            ${data.badge}
+          </div>
+          <h1 class="hero-title">${data.title}</h1>
+          <p class="hero-desc">${data.desc}</p>
+          <div class="hero-buttons">
+            <a href="#" class="btn btn-primary">
+              کاوش کنید
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M19 12H5M12 5l-7 7 7 7"/>
+              </svg>
+            </a>
+            <a href="#" class="btn btn-outline">اطلاعات بیشتر</a>
+          </div>
+        </div>
+
+        <div class="hero-image-wrap">
+          <div class="hero-media-frame">
+            <span class="frame-corner tl"></span>
+            <span class="frame-corner tr"></span>
+            <span class="frame-corner bl"></span>
+            <span class="frame-corner br"></span>
+            <img class="hero-media" src="${data.img}" alt="${data.title}" loading="lazy"
+              onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80'">
+            <video class="hero-video" autoplay muted loop playsinline preload="none" poster="${data.img}">
+              <source src="${data.video}" type="video/mp4">
+            </video>
+          </div>
+          <div class="float-card float-card-1">
+            <div class="code-line"><span class="code-key">theme:</span> <span class="code-val">"${data.section}"</span></div>
+          </div>
+          <div class="float-card float-card-2">
+            <div class="code-line"><span class="code-key">fn:</span> <span class="code-val">${data.float1}</span></div>
+          </div>
+          <div class="float-card float-card-3">
+            <div class="code-line"><span class="code-key">exec:</span> <span class="code-val">${data.float2}</span></div>
+          </div>
+          <div class="float-card float-card-4">
+            <div class="code-line"><span class="code-comment">// vol ${data.float4}</span></div>
+          </div>
+        </div>
+      </div>
+
+      ${index % 6 === 3 ? `
+        <div class="marquee-wrap">
+          <div class="marquee">
+            <span>VOL.2</span><span>NEON</span><span>HOLOGRAM</span><span>SYNTHWAVE</span>
+            <span>AURORA</span><span>VAPORWAVE</span><span>GLITCH</span><span>SUNSET</span>
+            <span>MINT</span><span>LIME</span><span>DEEP BLUE</span><span>CLUB</span>
+            <span>VOL.2</span><span>NEON</span><span>HOLOGRAM</span><span>SYNTHWAVE</span>
+            <span>AURORA</span><span>VAPORWAVE</span><span>GLITCH</span><span>SUNSET</span>
+          </div>
+        </div>
+      ` : ''}
+    </section>
+  `;
+
+  container.insertAdjacentHTML('beforeend', html);
+});
+
+/* ==========================================
+   THREE.JS CANVAS
+========================================== */
+document.querySelectorAll('.hero-canvas').forEach((canvas, idx) => {
+  const hero = canvas.closest('.hero');
+  const rect = hero.getBoundingClientRect();
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
+  camera.position.z = 5;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(rect.width, rect.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const particleCount = 90;
+  const particlesGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  const velocities = [];
+
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 22;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 22;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 12;
+    velocities.push({
+      x: (Math.random() - 0.5) * 0.012,
+      y: (Math.random() - 0.5) * 0.012,
+      z: (Math.random() - 0.5) * 0.012
+    });
+  }
+
+  particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  const colors = [0xff00ff, 0x00ffff, 0x00ff88, 0xffd700, 0xa855f7, 0xff006e, 0x00e5ff, 0xff3d00];
+  const color = colors[idx % colors.length];
+
+  const particlesMat = new THREE.PointsMaterial({
+    color,
+    size: 0.07,
+    transparent: true,
+    opacity: 0.85,
+    blending: THREE.AdditiveBlending
+  });
+
+  const particles = new THREE.Points(particlesGeo, particlesMat);
+  scene.add(particles);
+
+  // Icosahedron
+  const geometry = new THREE.IcosahedronGeometry(1.5, 1);
+  const material = new THREE.MeshBasicMaterial({
+    color,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.13
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  // Rings
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(2.3, 0.02, 8, 60),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.28 })
+  );
+  scene.add(ring);
+
+  const ring2 = new THREE.Mesh(
+    new THREE.TorusGeometry(2.9, 0.015, 8, 60),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.16 })
+  );
+  scene.add(ring2);
+
+  let mouseX = 0, mouseY = 0;
+  hero.addEventListener('mousemove', (e) => {
+    const r = hero.getBoundingClientRect();
+    mouseX = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    mouseY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+  });
+
+  let visible = false;
+  new IntersectionObserver((entries) => {
+    visible = entries[0].isIntersecting;
+  }, { threshold: 0.05 }).observe(hero);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (!visible) return;
+
+    mesh.rotation.x += 0.003;
+    mesh.rotation.y += 0.005;
+    ring.rotation.x += 0.002;
+    ring.rotation.y -= 0.003;
+    ring2.rotation.z += 0.004;
+
+    const pos = particlesGeo.attributes.position.array;
+    for (let i = 0; i < particleCount; i++) {
+      pos[i * 3] += velocities[i].x;
+      pos[i * 3 + 1] += velocities[i].y;
+      pos[i * 3 + 2] += velocities[i].z;
+
+      if (Math.abs(pos[i * 3]) > 11) velocities[i].x *= -1;
+      if (Math.abs(pos[i * 3 + 1]) > 11) velocities[i].y *= -1;
+      if (Math.abs(pos[i * 3 + 2]) > 6) velocities[i].z *= -1;
+    }
+    particlesGeo.attributes.position.needsUpdate = true;
+
+    camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.05;
+    camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.05;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const r = hero.getBoundingClientRect();
+    camera.aspect = r.width / r.height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(r.width, r.height);
+  });
+});
+
+/* ==========================================
+   SCROLL / COUNTER
+========================================== */
+const progressBar = document.getElementById('progressBar');
+const currentHeroEl = document.getElementById('currentHero');
+const currentSectionEl = document.getElementById('currentSection');
+const topHud = document.getElementById('topHud');
+const allHeroes = document.querySelectorAll('.hero');
+let ticking = false;
+
+function updateScroll() {
+  const st = window.scrollY;
+  const dh = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = (st / dh) * 100 + '%';
+
+  if (st > 100) topHud.classList.add('scrolled');
+  else topHud.classList.remove('scrolled');
+
+  const mid = st + window.innerHeight / 2;
+  let currentIdx = 0;
+  allHeroes.forEach((h, i) => {
+    if (mid >= h.offsetTop && mid < h.offsetTop + h.offsetHeight) {
+      currentIdx = i;
+      h.dataset.section && (currentSectionEl.textContent = h.dataset.section);
+    }
+  });
+
+  currentHeroEl.textContent = String(currentIdx + 1).padStart(3, '0');
+}
+
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      updateScroll();
+      handleParallax();
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+function handleParallax() {
+  const vh = window.innerHeight;
+  allHeroes.forEach(hero => {
+    const rect = hero.getBoundingClientRect();
+    const progress = (rect.top + rect.height / 2 - vh / 2) / vh;
+
+    const textEl = hero.querySelector('.hero-text');
+    const imgEl = hero.querySelector('.hero-image-wrap');
+    const orbs = hero.querySelectorAll('.glow-orb');
+
+    if (textEl) {
+      textEl.style.transform = `perspective(2000px) rotateY(${progress * 12}deg) translateZ(${-Math.abs(progress) * 80}px)`;
+    }
+    if (imgEl) {
+      imgEl.style.transform = `perspective(2000px) rotateY(${-progress * 12}deg) translateZ(${-Math.abs(progress) * 120}px)`;
+    }
+    orbs.forEach((orb, i) => {
+      orb.style.transform = `translateY(${progress * (30 + i * 20)}px)`;
+    });
+
+    const content = hero.querySelector('.hero-content');
+    if (content) content.style.opacity = Math.max(0, 1 - Math.abs(progress) * 0.7);
+  });
+}
+
+/* ==========================================
+   MOUSE 3D
+========================================== */
+allHeroes.forEach(hero => {
+  hero.addEventListener('mousemove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+    const frame = hero.querySelector('.hero-media-frame');
+    if (frame) {
+      frame.style.transform = `perspective(1200px) rotateY(${x * 25}deg) rotateX(${-y * 25}deg) scale(1.02)`;
+    }
+
+    hero.querySelectorAll('.float-card').forEach((card, i) => {
+      const d = 20 + i * 15;
+      card.style.transform = `translate3d(${x * d}px, ${y * d}px, ${60 + i * 20}px) rotateY(${x * 15}deg)`;
+    });
+  });
+
+  hero.addEventListener('mouseleave', () => {
+    const f = hero.querySelector('.hero-media-frame');
+    if (f) f.style.transform = '';
+    hero.querySelectorAll('.float-card').forEach(c => c.style.transform = '');
+  });
+});
+
+/* ==========================================
+   LOADER
+========================================== */
+let lp = 0;
+const lf = document.getElementById('loaderFill');
+const lpct = document.getElementById('loaderPercent');
+const loader = document.getElementById('loader');
+
+const li = setInterval(() => {
+  lp += Math.random() * 14;
+  if (lp >= 100) {
+    lp = 100;
+    clearInterval(li);
+    setTimeout(() => {
+      loader.classList.add('hidden');
+      setTimeout(() => loader.style.display = 'none', 800);
+      updateScroll();
+      handleParallax();
+    }, 300);
+  }
+  lf.style.width = lp + '%';
+  lpct.textContent = Math.floor(lp);
+}, 100);
+
+/* ==========================================
+   CLOCK + SESSION TIMER
+========================================== */
+const clockEl = document.getElementById('clock');
+const sessionEl = document.getElementById('sessionTime');
+const startTime = Date.now();
+
+setInterval(() => {
+  const now = new Date();
+  clockEl.textContent = now.toTimeString().slice(0, 8);
+
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss = String(elapsed % 60).padStart(2, '0');
+  sessionEl.textContent = `${mm}:${ss}`;
+}, 1000);
+
+/* ==========================================
+   KEYBOARD
+========================================== */
+document.addEventListener('keydown', (e) => {
+  const cur = parseInt(currentHeroEl.textContent);
+  if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault();
+    const nxt = Math.min(100, cur + 1);
+    document.getElementById(`n${nxt}`)?.scrollIntoView({ behavior: 'smooth' });
+  }
+  if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault();
+    const prv = Math.max(1, cur - 1);
+    document.getElementById(`n${prv}`)?.scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+/* ==========================================
+   INIT
+========================================== */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    updateScroll();
+    handleParallax();
+  }, 1200);
+});
+
+console.log('%c🎨 NEON STUDIO - VOL.2', 'color: #ff00ff; font-size: 24px; font-weight: bold; text-shadow: 0 0 20px #ff00ff;');
+console.log('%c100 FRESH HERO SECTIONS LOADED', 'color: #00ffff; font-size: 16px;');
+console.log('%cThemes: Neon, Hologram, Synthwave, Aurora, Vaporwave, Glitch, Sunset, Mint, Lime, Deep Blue...', 'color: #ffd700; font-size: 12px;');
+console.log('%c100% Unique from Volume 1 ✨', 'color: #00ff41; font-size: 12px; font-weight: bold;');
+</script>
+
+</body>
+</html>
